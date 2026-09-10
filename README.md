@@ -26,3 +26,19 @@
      "dev": "nodemon index.js"
    }
    ```
+
+4. (Optional for better development) Install Prettier for code formatting so that the code is consistent and easy to read:
+   ```bash
+   npm i -D prettier
+   ```
+
+- Create a `.prettierrc` file in the backend directory to configure Prettier settings as per preference:
+   ```json
+   {
+     "singleQuote": false,
+     "bracketSpacing": true,
+     "tabWidth": 2,
+     "semi": true,
+     "trailingComma": "es5"
+   }
+   ```
