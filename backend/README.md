@@ -20,3 +20,4 @@
    npm i cors cookie-parser
    ```
 
+6. Middleware is checking the request and response objects before they reach the route handler.
