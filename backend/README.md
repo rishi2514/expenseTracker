@@ -21,3 +21,11 @@
    ```
 
 6. Middleware is checking the request and response objects before they reach the route handler.
+
+7. We have installed bcrypt and jsonwebtoken for converting passwords to hashes and generating JSON Web Tokens. They both are used for authentication purposes and mostly prsent in each application where authentication is required. Alternate pf bcrypt is to use bcryptjs. Install them using the following command:
+
+   ```bash
+   npm i bcrypt jsonwebtoken
+   ```
+
+8. We get some hooks and methods from mongoose to perform some operations on the database. We will be using them in our project. Basic example in `user.model.js` file for hasing the password and comparing it with the user input as well as generating access and refresh tokens.
