@@ -1,3 +1,23 @@
+import "dotenv/config"
+import connectDB from "./db/index.js";
+
+connectDB() //using .then and .catch to work after the promise
+    .then(() => {
+        // catching error 
+        app.on("error", (error) => {
+            console.log("Error running server: ", error)
+        })
+
+        // listening in server
+        app.listen(process.env.PORT || 5000), () => {
+            console.log(`Server is running at: ${process.env.PORT}`)
+        }
+    })
+    .catch((error) => {
+        console.log("MONGO DB CONNECTION FAILED: ", error)
+    })
+
+
 /*
 // This is a approach to make the connection with DB with the help of IFFE but we are doing a better and professional approach
 import mongoose from "mongoose";
@@ -26,8 +46,3 @@ const app = express()
     }
 })()
 */
-
-import "dotenv/config"
-import connectDB from "./db/index.js";
-
-connectDB()

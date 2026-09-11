@@ -13,3 +13,10 @@
    - These are only the initial dependencies. You will need to install more dependencies as you progress through the project.
 
 4. Connect to the database using the connection string provided in the `.env` file. You can use the `mongoose` library to connect to MongoDB.
+
+5. Cors and cookie-parser are also required for the backend as cors handle cross-origin resource sharing and cookie-parser handles cookies. Install them using the following command:
+
+   ```bash
+   npm i cors cookie-parser
+   ```
+
