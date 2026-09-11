@@ -29,3 +29,10 @@
    ```
 
 8. We get some hooks and methods from mongoose to perform some operations on the database. We will be using them in our project. Basic example in `user.model.js` file for hasing the password and comparing it with the user input as well as generating access and refresh tokens.
+
+9. We will use multer and cloudinary for uploading images to the cloud. Install them using the following command:
+
+   ```bash
+   npm i multer cloudinary
+   ```
+   - First we take the image from the user using multer and hold them in our server. Then we upload it to cloudinary so if any issue occurs, we can retry the image upload from our server. We will be using cloudinary for storing images in the cloud. 
