@@ -22,7 +22,7 @@
 
 6. Middleware is checking the request and response objects before they reach the route handler.
 
-7. We have installed bcrypt and jsonwebtoken for converting passwords to hashes and generating JSON Web Tokens. They both are used for authentication purposes and mostly prsent in each application where authentication is required. Alternate pf bcrypt is to use bcryptjs. Install them using the following command:
+7. We have installed bcrypt and jsonwebtoken for converting passwords to hashes and generating JSON Web Tokens. They both are used for authentication purposes and mostly prsent in each application where authentication is required. Alternate of bcrypt is to use bcryptjs. Install them using the following command:
 
    ```bash
    npm i bcrypt jsonwebtoken
@@ -44,3 +44,5 @@
 12. After writing the controllers, we will write the routes for our application. Routes are the endpoints of our application which will be used by the frontend to communicate with the backend. We will be using express router to create the routes.\
 
 13. After writing routes we will test them using postman. Postman is a tool which is used to test the APIs. We will be using postman desktop application as they support localhost testing.
+
+14. After testing the routes, we will do the logic building for our application. We will be using the controllers and routes we created to implement the features of our application. We will be using the models we created to interact with the database.

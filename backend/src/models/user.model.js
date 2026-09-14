@@ -31,6 +31,9 @@ const userSchema = new Schema(
     avatar: {
       type: String,
     },
+    refreshToken : {
+      type: String
+    }
   },
   {
     timestamps: true,
