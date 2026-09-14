@@ -36,3 +36,11 @@
    npm i multer cloudinary
    ```
    - First we take the image from the user using multer and hold them in our server. Then we upload it to cloudinary so if any issue occurs, we can retry the image upload from our server. We will be using cloudinary for storing images in the cloud. 
+
+10. After setting up all the above mentioned dependencies and configurations, we can start building the backend of our application. The setting up to the external services are very important as they will be used in the backend for various functionalities so make sure to set them up correctly at first with the proper configuration so that we won't have to do that when we start implementing the features.
+
+11. Now we can start implementing the features of our application. We are taking first step as writting controllers for our application. Controllers are the main part of the backend as they handle the requests and responses. We are using the asyncHandler we created as utils to handle the async await and try catch for error handling.
+
+12. After writing the controllers, we will write the routes for our application. Routes are the endpoints of our application which will be used by the frontend to communicate with the backend. We will be using express router to create the routes.\
+
+13. After writing routes we will test them using postman. Postman is a tool which is used to test the APIs. We will be using postman desktop application as they support localhost testing.
