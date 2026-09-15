@@ -4,6 +4,22 @@ import ApiResponse from "../utils/apiResponse.js";
 import { User } from "../models/user.model.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
 
+// A function to generate access and refresh token so that won't need to write it again and again
+const generateAccessAndRefreshTokens = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(500, "Something went wrong while generating tokens.");
+  }
+};
+
 // Using our asycHandler utility which automatically wrap function in async await and try catch block for better performance and error catching.
 const registerUser = asyncHandler(async (req, res) => {
   /* steps for logic building */
@@ -69,4 +85,73 @@ const registerUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, createdUser, "User registered successfully."));
 });
 
-export { registerUser };
+const loginUser = asyncHandler(async (req, res) => {
+  /* Steps for logic building */
+  // get user details from frontend
+  // check for validation empty fields or invalid mail format
+  // find the user in DB
+  // check for the password matches
+  // provide access and refresh token
+  // send tokens in cookies
+
+  // taking data from the api request
+  const { username, email, password } = req.body;
+
+  // validating for username or email
+  if (!username || !email) {
+    throw new ApiError(400, "Username or email is required.");
+  }
+
+  // finding user by username or email
+  const user = await User.findOne({
+    $or: [{ userName }, { email }],
+  });
+
+  if (!user) {
+    throw new ApiError(404, "User doesn't exist.");
+  }
+
+  // using the password checker to check for passwrod is correct or not the isPasswordCorrect method is written in userSchema and available through user
+  const isPasswordValid = await user.isPasswordCorrect(password);
+
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid user credentials.");
+  }
+
+  // generating and destructuring access and refresh token by helper function
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+    user._id
+  );
+
+  // options for cookies for making them secure
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  // removing the password and refreshToken from fetched user. Not making another db call
+  const loggedInUser = user.select("-password -refreshToken");
+
+  // setting cookies directly and sending data
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          user: loggedInUser,
+          accessToken,
+          refreshToken,
+        },
+        "User logged in successfully."
+      )
+    );
+});
+
+const logoutUser = asyncHandler(async (req, res) => {
+  
+})
+
+export { registerUser, loginUser };
