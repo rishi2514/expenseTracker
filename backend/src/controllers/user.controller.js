@@ -95,10 +95,10 @@ const loginUser = asyncHandler(async (req, res) => {
   // send tokens in cookies
 
   // taking data from the api request
-  const { username, email, password } = req.body;
+  const { userName, email, password } = req.body;
 
   // validating for username or email
-  if (!username || !email) {
+  if (!(userName || email)) {
     throw new ApiError(400, "Username or email is required.");
   }
 
@@ -130,7 +130,9 @@ const loginUser = asyncHandler(async (req, res) => {
   };
 
   // removing the password and refreshToken from fetched user. Not making another db call
-  const loggedInUser = user.select("-password -refreshToken");
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
 
   // setting cookies directly and sending data
   return res
@@ -150,6 +152,7 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
+// added auth middleware which has the access of user and passed it in req so using that user._id to find the user and clear cookies and set refreshToken to undefined
 const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
