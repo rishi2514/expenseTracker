@@ -12,8 +12,14 @@ const groupSchema = new Schema(
     },
     members: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "GroupMember",
+        memberId: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
+        role: {
+          type: String,
+          enum: ["admin", "member", "creator"],
+        },
       },
     ],
     isSetteled: {
@@ -24,4 +30,4 @@ const groupSchema = new Schema(
   { timestamps: true }
 );
 
-export const Group = model("Group", groupSchema)
+export const Group = model("Group", groupSchema);
