@@ -234,4 +234,111 @@ const refreshToken = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, logoutUser, refreshToken };
+const updateUser = asyncHandler(async (req, res) => {
+  // get name and useName from the request
+  const { name, userName } = req.body;
+
+  if (!(name || email)) {
+    throw new ApiError(401, "Atleast one field is required.");
+  }
+
+  // if both fields are present then update both fields in DB
+  if (name && userName) {
+    await User.findByIdAndUpdate(
+      req.user?._id,
+      {
+        $set: { name, userName },
+      },
+      { new: true }
+    ).select("-password");
+  }
+
+  // if only name is present then update only name in DB
+  if (name) {
+    await User.findByIdAndUpdate(
+      req.user?._id,
+      {
+        $set: { name },
+      },
+      { new: true }
+    ).select("-password");
+  }
+
+  // if only userName is present then update only userName in DB
+  if (userName) {
+    await User.findByIdAndUpdate(
+      req.user?._id,
+      {
+        $set: { userName },
+      },
+      { new: true }
+    ).select("-password");
+  }
+});
+
+const updateUserProfilePicture = asyncHandler(async (req, res) => {
+  const avatarLocalPath = req.file?.path;
+
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Profile picture is missing.");
+  }
+
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+  if (!avatar.url) {
+    throw new ApiError(500, "Error while uploading profile picture.");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        avatar: avatar.url,
+      },
+    },
+    { new: true }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Profile picture uploaded successfully."));
+});
+
+const updatePassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+
+  // taking user id from the auth middleware as it's protected route
+  const user = await User.findById(req.user?._id);
+
+  // check if teh existing password in db and password from dtaa same using helper isPasswordCorrect function written while making user schema
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+
+  if (!isPasswordCorrect) {
+    throw new ApiError(400, "Invalid old password");
+  }
+
+  // set user password to newPassword and update in Db
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password changed successfully."));
+});
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "User fetched successfully."));
+});
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshToken,
+  updatePassword,
+  getCurrentUser,
+  updateUser,
+  updateUserProfilePicture,
+};
