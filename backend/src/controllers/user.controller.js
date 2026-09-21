@@ -214,18 +214,18 @@ const refreshToken = asyncHandler(async (req, res) => {
     };
 
     // generate new tokens
-    const { accessToken, newRefreshToken } =
+    const { accessToken, refreshToken } =
       await generateAccessAndRefreshTokens(user._id);
 
     // save and return the new tokens
     return res
       .status(200)
       .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", newRefreshToken, options)
+      .cookie("refreshToken", refreshToken, options)
       .json(
         new ApiResponse(
           200,
-          { accessToken, refreshToken: newRefreshToken },
+          { accessToken, refreshToken },
           "Access token refreshed successfully."
         )
       );
@@ -310,6 +310,8 @@ const updateUserProfilePicture = asyncHandler(async (req, res) => {
     },
     { new: true }
   ).select("-password");
+
+  // helper to remove the existing profile pic if any attached from cloudinary
 
   return res
     .status(200)

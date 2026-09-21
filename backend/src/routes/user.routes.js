@@ -5,6 +5,7 @@ import {
   logoutUser,
   refreshToken,
   registerUser,
+  updatePassword,
   updateUser,
   updateUserProfilePicture,
 } from "../controllers/user.controller.js";
@@ -20,12 +21,12 @@ router.route("/register").post(upload.single("avatar"), registerUser);
 router.route("/login").post(loginUser);
 
 // secured routes
+router.route("/refresh-token").post(refreshToken);
+router.route("/").get(verifyJWT, getCurrentUser)
 router.route("/update").patch(verifyJWT, updateUser)
 router.route("/update-profile-pic").patch(verifyJWT, upload.single("avatar"), updateUserProfilePicture)
-router.route("/update-password").patch(verifyJWT, updateUserProfilePicture)
-router.route("/me").get(verifyJWT, getCurrentUser)
+router.route("/update-password").patch(verifyJWT, updatePassword)
 
 router.route("/logout").post(verifyJWT, logoutUser);
-router.route("/refresh-token").post(refreshToken);
 
 export default router;
