@@ -82,7 +82,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // sending response as pre defined structure via the ApiResponse utility
   return res
-    .status(201)
+    .status(200)
     .json(new ApiResponse(200, createdUser, "User registered successfully."));
 });
 
@@ -244,35 +244,47 @@ const updateUser = asyncHandler(async (req, res) => {
 
   // if both fields are present then update both fields in DB
   if (name && userName) {
-    await User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       req.user?._id,
       {
         $set: { name, userName },
       },
       { new: true }
     ).select("-password");
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, updatedUser, "User updated successfully."));
   }
 
   // if only name is present then update only name in DB
   if (name) {
-    await User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       req.user?._id,
       {
         $set: { name },
       },
       { new: true }
     ).select("-password");
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, updatedUser, "User updated successfully."));
   }
 
   // if only userName is present then update only userName in DB
   if (userName) {
-    await User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       req.user?._id,
       {
         $set: { userName },
       },
       { new: true }
     ).select("-password");
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, updatedUser, "User updated successfully."));
   }
 });
 
