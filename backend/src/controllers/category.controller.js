@@ -12,7 +12,7 @@ const createCategory = asyncHandler(async (req, res) => {
 
   const category = await Category.create({
     name,
-    createdBy: req.user._id,
+    createdBy: req.user?._id,
   });
 
   return res
@@ -50,6 +50,11 @@ const updateCategory = asyncHandler(async (req, res) => {
 // get a category by it's id
 const getCategory = asyncHandler(async (req, res) => {
   const categoryId = req.query.categoryId;
+
+  if(!categoryId) {
+    throw new ApiError(400, "Category Id is required.")
+  }
+
   const category = await Category.findById(categoryId);
   return res
     .status(200)
