@@ -2,7 +2,10 @@ import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/apiError.js";
 import ApiResponse from "../utils/apiResponse.js";
 import { User } from "../models/user.model.js";
-import uploadOnCloudinary from "../utils/cloudinary.js";
+import {
+  uploadOnCloudinary,
+  deleteFromCloudinary,
+} from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 
 // A helper function to generate access and refresh token so that won't need to write it again and again
@@ -214,8 +217,9 @@ const refreshToken = asyncHandler(async (req, res) => {
     };
 
     // generate new tokens
-    const { accessToken, refreshToken } =
-      await generateAccessAndRefreshTokens(user._id);
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+      user._id
+    );
 
     // save and return the new tokens
     return res
@@ -289,18 +293,21 @@ const updateUser = asyncHandler(async (req, res) => {
 });
 
 const updateUserProfilePicture = asyncHandler(async (req, res) => {
+  // get the local path of the uploaded file from multer middleware
   const avatarLocalPath = req.file?.path;
 
   if (!avatarLocalPath) {
     throw new ApiError(400, "Profile picture is missing.");
   }
 
+  // upload the file to cloudinary using the utility we created
   const avatar = await uploadOnCloudinary(avatarLocalPath);
 
   if (!avatar.url) {
     throw new ApiError(500, "Error while uploading profile picture.");
   }
 
+  // update the user in DB with the new avatar url and return the updated user without password
   const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
@@ -311,7 +318,11 @@ const updateUserProfilePicture = asyncHandler(async (req, res) => {
     { new: true }
   ).select("-password");
 
-  // helper to remove the existing profile pic if any attached from cloudinary
+  // if the user already has an avatar then delete the old avatar from cloudinary using the utility we created passing the publicId by splitting the url and getting the last part of it which is the publicId
+  if (req.user?.avatar) {
+    const publicId = req.user.avatar.split("/").pop().split(".")[0];
+    await deleteFromCloudinary(publicId);
+  }
 
   return res
     .status(200)
