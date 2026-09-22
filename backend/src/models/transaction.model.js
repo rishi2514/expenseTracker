@@ -26,6 +26,7 @@ const transactionSchema = new Schema(
     },
     paymentMethod: {
       type: String,
+      enum: ["UPI", "CASH", "BANK"]
     },
     message: {
       type: String,
