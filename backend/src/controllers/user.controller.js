@@ -352,6 +352,10 @@ const updatePassword = asyncHandler(async (req, res) => {
 });
 
 const getCurrentUser = asyncHandler(async (req, res) => {
+  if (!res.user) {
+    throw new ApiError(404, "No user found");
+  }
+
   return res
     .status(200)
     .json(new ApiResponse(200, req.user, "User fetched successfully."));
