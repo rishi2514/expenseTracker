@@ -49,7 +49,7 @@ const updateCategory = asyncHandler(async (req, res) => {
 
 // get a category by it's id
 const getCategory = asyncHandler(async (req, res) => {
-  const { categoryId } = req.body;
+  const categoryId = req.query.categoryId;
   const category = await Category.findById(categoryId);
   return res
     .status(200)
@@ -58,7 +58,6 @@ const getCategory = asyncHandler(async (req, res) => {
 
 // get all categories by a user. Used aggregation pipeline for finding all categories created by logged in user
 const getAllCategories = asyncHandler(async (req, res) => {
-
   // aggregate method provide us many prebuilt operators to use. The $match operator match the field from a Schema by any value we provided. In our case we are matching the createdBy field from the Category schema by the logged in user's _id. It returns the value in array.
   const categories = await Category.aggregate([
     {
