@@ -1,5 +1,6 @@
 import "dotenv/config"
 import connectDB from "./db/index.js";
+import app from "./app.js";
 
 connectDB() //using .then and .catch to work after the promise
     .then(() => {
@@ -9,9 +10,9 @@ connectDB() //using .then and .catch to work after the promise
         })
 
         // listening in server
-        app.listen(process.env.PORT || 5000), () => {
-            console.log(`Server is running at: ${process.env.PORT}`)
-        }
+        app.listen(process.env.PORT || 5000, () => {
+            console.log(`Server is running at port: ${process.env.PORT}`)
+        })
     })
     .catch((error) => {
         console.log("MONGO DB CONNECTION FAILED: ", error)

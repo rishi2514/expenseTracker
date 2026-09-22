@@ -6,8 +6,6 @@ const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
-      index: true,
       trim: true,
     },
     userName: {
@@ -31,6 +29,9 @@ const userSchema = new Schema(
     avatar: {
       type: String,
     },
+    refreshToken : {
+      type: String
+    }
   },
   {
     timestamps: true,
@@ -58,8 +59,6 @@ userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
       _id: this._id,
-      email: this.email,
-      userName: this.userName,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
