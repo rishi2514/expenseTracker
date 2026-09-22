@@ -31,10 +31,12 @@ app.use(cookieParser())
 // Routes import
 import userRouter from "./routes/user.routes.js"
 import categoryRouter from "./routes/category.routes.js"
+import transactionRouter from "./routes/transaction.routes.js"
 
 // We make the routes as middleware which first accept the route name which acts as prefix and then indicate the route file we want to go to. It works like http://localhost:3000/api/v1/user/further_route_name
 // Routes 
 app.use("/api/v1/user", userRouter)
 app.use("/api/v1/category", categoryRouter)
+app.use("/api/v1/transaction", transactionRouter)
 
 export default app;

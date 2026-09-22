@@ -14,11 +14,13 @@ const transactionSchema = new Schema(
     amount: {
       type: Number,
       default: 0,
-      required: true,
     },
-    categoryId: {
-      type: Schema.Types.ObjectId,
-      ref: "Category",
+    category: {
+      _id: { 
+        type: Schema.Types.ObjectId, 
+        ref: "Category" 
+      },
+      name: String,
     },
     date: {
       type: Date,
@@ -26,7 +28,7 @@ const transactionSchema = new Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ["UPI", "CASH", "BANK"]
+      enum: ["UPI", "CASH", "BANK"],
     },
     message: {
       type: String,
@@ -35,4 +37,4 @@ const transactionSchema = new Schema(
   { timestamps: true }
 );
 
-export const Transaction = model("Transaction", transactionSchema)
+export const Transaction = model("Transaction", transactionSchema);
