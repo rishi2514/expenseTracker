@@ -49,7 +49,7 @@ const updateCategory = asyncHandler(async (req, res) => {
 
 // get a category by it's id
 const getCategory = asyncHandler(async (req, res) => {
-  const categoryId = req.query.categoryId;
+  const {categoryId} = req.params;
 
   if(!categoryId) {
     throw new ApiError(400, "Category Id is required.")

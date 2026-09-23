@@ -61,7 +61,7 @@ const getAllTransaction = asyncHandler(async (req, res) => {
 
 // get a single transaction by it's id through qurery param
 const getTransaction = asyncHandler(async (req, res) => {
-  const transactionId = req.query?.transactionId;
+  const {transactionId} = req.params;
 
   if (!transactionId) {
     throw new ApiError(400, "Transaction id is required.");
