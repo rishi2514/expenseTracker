@@ -1,4 +1,5 @@
 import mongoose, { model, Schema } from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const categorySchema = new Schema(
   {
@@ -13,5 +14,7 @@ const categorySchema = new Schema(
   },
   { timestamps: true }
 );
+
+categorySchema.plugin(mongoosePaginate);
 
 export const Category = model("Category", categorySchema)

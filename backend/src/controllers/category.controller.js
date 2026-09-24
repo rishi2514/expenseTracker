@@ -49,16 +49,16 @@ const updateCategory = asyncHandler(async (req, res) => {
 
 // get a category by it's id
 const getCategory = asyncHandler(async (req, res) => {
-  const {categoryId} = req.params;
+  const { categoryId } = req.params;
 
-  if(!categoryId) {
-    throw new ApiError(400, "Category Id is required.")
+  if (!categoryId) {
+    throw new ApiError(400, "Category Id is required.");
   }
 
   const category = await Category.findById(categoryId);
 
-  if(!category) {
-    throw new ApiError(404, "Category not found.")
+  if (!category) {
+    throw new ApiError(404, "Category not found.");
   }
 
   return res
@@ -69,21 +69,48 @@ const getCategory = asyncHandler(async (req, res) => {
 // get all categories by a user. Used aggregation pipeline for finding all categories created by logged in user
 const getAllCategories = asyncHandler(async (req, res) => {
   // aggregate method provide us many prebuilt operators to use. The $match operator match the field from a Schema by any value we provided. In our case we are matching the createdBy field from the Category schema by the logged in user's _id. It returns the value in array.
-  const categories = await Category.aggregate([
-    {
-      $match: {
-        createdBy: req.user?._id,
-      },
-    },
-  ]);
+  // const categories = await Category.aggregate([
+  //   {
+  //     $match: {
+  //       createdBy: req.user?._id,
+  //     },
+  //   },
+  // ]);
 
-  if(!categories?.length) {
-    throw new ApiError(404, "No categories found.")
+  // if(!categories?.length) {
+  //   throw new ApiError(404, "No categories found.")
+  // }
+
+  // getting the page, limit and name from query params.
+  const { page, limit, name } = req.query;
+
+  // Creating a query object to filter categories based on the logged-in user and optional values added as required
+  let query = {
+    createdBy: req.user?._id,
+  };
+
+  // If the name is provided, we add a regex search for the name to the query object.
+  if (name) {
+    query.name = { $regex: name, $options: "i" }; // Case-insensitive search for name
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, categories, "Categories fetched successfully"));
+  // Setting up pagination options.
+  const options = {
+    page: parseInt(page) || 1,
+    limit: parseInt(limit) || 10,
+  };
+
+  // Using the paginate method from mongoose-paginate-v2 to fetch categories based on the query and options defined above. This will return a paginated result set.
+  const categories = await Category.paginate(query, options);
+
+  return res.status(200).json(
+    new ApiResponse(200, categories.docs, "Categories fetched successfully", {
+      totalDocs: categories.totalDocs,
+      limit: categories.limit,
+      totalPages: categories.totalPages,
+      page: categories.page,
+    })
+  );
 });
 
 export { createCategory, updateCategory, getCategory, getAllCategories };
