@@ -1,16 +1,74 @@
-# React + Vite
+# Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+1. We are using Vite React for the frontend. SO we start with installing necessary dependencies and basic configuration for the frontend.
 
-Currently, two official plugins are available:
+```bash
+    npm i -D prettier
+    npm i tailwindcss @tailwindcss/vite
+```
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+2. Configure the `prettier` settings and `prettierignore` file in the frontend directory as per preference.
 
-## React Compiler
+3. Than we need to make some changes in the `vite.config.js` file. We need to import tailwindcss and add it to the plugins array. The final `vite.config.js` file will look like this:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```javascript
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite' 
 
-## Expanding the ESLint configuration
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+})
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+4. Now just import the tailwind to the main css file. The final `index.css` file will look like this:
+
+```css
+@import "tailwindcss";
+```
+
+5. Install react-router-dom for routing in the frontend. For installing react-router-dom, we can use the following command:
+
+```bash
+npm i react-router-dom
+```
+
+6. The basics for using react-router-dom are as follows:
+    - First we need to wrap our application with `BrowserRouter` component in the `main.jsx` file. The final `main.jsx` file will look like this:
+
+```javascript
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.jsx";
+import { BrowserRouter } from "react-router-dom";
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </StrictMode>
+);
+```
+
+7. Now we can use the `Routes` and `Route` components in our `App.jsx` file to define the routes for our application. The final `App.jsx` file will look like this:
+
+```javascript
+import { Route, Routes } from "react-router-dom"
+import Login from "./pages/Login"
+import Register from "./pages/Register"
+
+function App() {
+
+  return (
+   <Routes>
+    <Route path="/" element={<Login />} />
+    <Route path="/register" element={<Register />} />
+   </Routes>
+  )
+}
+
+export default App
+```

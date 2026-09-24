@@ -89,3 +89,9 @@
     ```
 
 11. Now we can start building the frontend and install the required dependencies as we progress through the project.
+
+12. The first required dependency we are going to install is react-router-dom for routing in the frontend. We can use the following command to install it:
+
+    ```bash
+    npm i react-router-dom
+    ```

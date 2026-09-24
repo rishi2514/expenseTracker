@@ -1,9 +1,14 @@
+import { Route, Routes } from "react-router-dom"
+import Login from "./pages/Login"
+import Register from "./pages/Register"
+
 function App() {
 
   return (
-    <div className="text-3xl font-bold underline text-red-600 ">
-      Hello
-    </div>
+   <Routes>
+    <Route path="/" element={<Login />} />
+    <Route path="/register" element={<Register />} />
+   </Routes>
   )
 }
 
