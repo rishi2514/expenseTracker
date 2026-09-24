@@ -103,13 +103,15 @@ const getAllCategories = asyncHandler(async (req, res) => {
   // Using the paginate method from mongoose-paginate-v2 to fetch categories based on the query and options defined above. This will return a paginated result set.
   const categories = await Category.paginate(query, options);
 
+  const meta = {
+    totalDocs: categories.totalDocs,
+    limit: categories.limit,
+    totalPages: categories.totalPages,
+    page: categories.page,
+  };
+
   return res.status(200).json(
-    new ApiResponse(200, categories.docs, "Categories fetched successfully", {
-      totalDocs: categories.totalDocs,
-      limit: categories.limit,
-      totalPages: categories.totalPages,
-      page: categories.page,
-    })
+    new ApiResponse(200, categories.docs, "Categories fetched successfully", meta)
   );
 });
 
