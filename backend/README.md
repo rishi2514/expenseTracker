@@ -35,7 +35,7 @@
    ```bash
    npm i multer cloudinary
    ```
-   - First we take the image from the user using multer and hold them in our server. Then we upload it to cloudinary so if any issue occurs, we can retry the image upload from our server. We will be using cloudinary for storing images in the cloud. 
+   - First we take the image from the user using multer and hold them in our server. Then we upload it to cloudinary so if any issue occurs, we can retry the image upload from our server. We will be using cloudinary for storing images in the cloud.
 
 10. After setting up all the above mentioned dependencies and configurations, we can start building the backend of our application. The setting up to the external services are very important as they will be used in the backend for various functionalities so make sure to set them up correctly at first with the proper configuration so that we won't have to do that when we start implementing the features.
 
@@ -46,3 +46,51 @@
 13. After writing routes we will test them using postman. Postman is a tool which is used to test the APIs. We will be using postman desktop application as they support localhost testing.
 
 14. After testing the routes, we will do the logic building for our application. We will be using the controllers and routes we created to implement the features of our application. We will be using the models we created to interact with the database.
+
+15. We are using the mongoose-paginate-v2 package for pagination in our application. It is a very simple and easy to use package for pagination.
+
+```bash
+npm i mongoose-paginate-v2
+```
+
+16. It's as simple as adding the plugin to the schema and then using the paginate method on the model.
+
+```javascript
+// Add the plugin to the schema
+import mongoose, { model, Schema } from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
+
+const categorySchema = new Schema(
+  // Your schema definition
+);
+
+categorySchema.plugin(mongoosePaginate);
+
+export const Category = model("Category", categorySchema)
+```
+
+```javascript
+// Use the paginate method on the controller
+const getAllCategories = asyncHandler(async (req, res) => {
+  const { page, limit, name } = req.query;
+
+  let query = {
+    createdBy: req.user?._id,
+  };
+
+  if (name) {
+    query.name = { $regex: name, $options: "i" }; // Case-insensitive search for name
+  }
+
+  const options = {
+    page: parseInt(page) || 1,
+    limit: parseInt(limit) || 10,
+  };
+  
+  const categories = await Category.paginate(query, options);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, categories, "Categories fetched successfully"));
+});
+```

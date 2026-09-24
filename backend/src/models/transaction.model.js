@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const transactionSchema = new Schema(
   {
@@ -16,9 +17,9 @@ const transactionSchema = new Schema(
       default: 0,
     },
     category: {
-      _id: { 
-        type: Schema.Types.ObjectId, 
-        ref: "Category" 
+      _id: {
+        type: Schema.Types.ObjectId,
+        ref: "Category",
       },
       name: String,
     },
@@ -36,5 +37,7 @@ const transactionSchema = new Schema(
   },
   { timestamps: true }
 );
+
+transactionSchema.plugin(mongoosePaginate);
 
 export const Transaction = model("Transaction", transactionSchema);

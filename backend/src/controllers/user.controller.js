@@ -156,12 +156,12 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
-// added auth middleware which has the access of user and passed it in req so using that user._id to find the user and clear cookies and set refreshToken to undefined
+// added auth middleware which has the access of user and passed it in req so using that user._id to find the user and clear cookies and unset the refresh token
 const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
     {
-      $set: { refreshToken: null },
+      $unset: { refreshToken: 1 },
     },
     {
       new: true,
@@ -352,7 +352,7 @@ const updatePassword = asyncHandler(async (req, res) => {
 });
 
 const getCurrentUser = asyncHandler(async (req, res) => {
-  if (!res.user) {
+  if (!req.user) {
     throw new ApiError(404, "No user found");
   }
 

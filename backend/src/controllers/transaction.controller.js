@@ -44,24 +44,103 @@ const createTransaction = asyncHandler(async (req, res) => {
 
 // get all transactions by the match method from aggregrate pipeline to fetch all transactions of logged in user
 const getAllTransaction = asyncHandler(async (req, res) => {
-  const transactions = await Transaction.aggregate([
-    {
-      $match: {
-        userId: req.user?._id,
-      },
-    },
-  ]);
+  // Destructuring the query parameters from the request object.
+  const {
+    transactionType,
+    categoryId,
+    minAmount,
+    maxAmount,
+    startDate,
+    endDate,
+    search,
+    sortBy,
+    sortOrder,
+    page,
+    limit,
+  } = req.query;
+
+  // Creating a query object to filter transactions based on the logged-in user and optional values added as required.
+  const query = {
+    userId: req.user?._id,
+  };
+
+  // If the transactionType is provided, we add it to the query object to filter transactions by type.
+  if (transactionType) {
+    query.transactionType = transactionType;
+  }
+
+  // If the categoryId is provided, we add it to the query object to filter transactions by category.
+  if (categoryId) {
+    query["category._id"] = categoryId;
+  }
+
+  // If the minAmount or maxAmount is provided, we add a range filter for the amount to the query object.
+  if (minAmount || maxAmount) {
+    query.amount = {};
+    if (minAmount) {
+      query.amount.$gte = parseFloat(minAmount);
+    }
+    if (maxAmount) {
+      query.amount.$lte = parseFloat(maxAmount);
+    }
+  }
+
+  // If the startDate or endDate is provided, we add a date range filter to the query object.
+  if (startDate || endDate) {
+    query.date = {};
+    if (startDate) {
+      query.date.$gte = new Date(startDate);
+    }
+    if (endDate) {
+      query.date.$lte = new Date(endDate);
+    }
+  }
+
+  // If the search term is provided, we add a regex search for the message to the query object.
+  if (search) {
+    query.message = { $regex: search, $options: "i" };
+  }
+
+  // Setting up sorting options based on the sortBy and sortOrder query parameters. If sortBy is provided, we determine the order (ascending or descending) and add it to the sortOptions object.
+  const sortOptions = {};
+  if (sortBy) {
+    const order = sortOrder === "desc" ? -1 : 1;
+    sortOptions[sortBy] = order;
+  }
+
+  // Setting up pagination options
+  const options = {
+    page: parseInt(page) || 1,
+    limit: parseInt(limit) || 10,
+    sort: sortOptions,
+  };
+
+  // Using the paginate method from mongoose-paginate-v2 to fetch transactions
+  const transactions = await Transaction.paginate(query, options);
+
+  // Creating a meta object to include pagination details in the response.
+  const meta = {
+    totalDocs: transactions.totalDocs,
+    limit: transactions.limit,
+    totalPages: transactions.totalPages,
+    page: transactions.page,
+  };
 
   return res
     .status(200)
     .json(
-      new ApiResponse(200, transactions, "Transactions fetched successfully.")
+      new ApiResponse(
+        200,
+        transactions.docs,
+        "Transactions fetched successfully.",
+        meta
+      )
     );
 });
 
 // get a single transaction by it's id through qurery param
 const getTransaction = asyncHandler(async (req, res) => {
-  const transactionId = req.query?.transactionId;
+  const { transactionId } = req.params;
 
   if (!transactionId) {
     throw new ApiError(400, "Transaction id is required.");

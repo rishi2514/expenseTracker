@@ -10,8 +10,8 @@ import {
 const router = Router();
 
 router.route("/create").post(verifyJWT, createTransaction);
-router.route("/all").get(verifyJWT, getAllTransaction);
-router.route("/").get(verifyJWT, getTransaction)
+router.route("/").get(verifyJWT, getAllTransaction);
+router.route("/:transactionId").get(verifyJWT, getTransaction)
 router.route("/update").patch(verifyJWT, updateTransaction)
 
 export default router;
