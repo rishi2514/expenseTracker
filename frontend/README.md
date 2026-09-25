@@ -72,3 +72,15 @@ function App() {
 
 export default App
 ```
+
+8. We're using `react-icons` for icons in the frontend. For installing react-icons, we can use the following command:
+
+```bash
+npm i react-icons
+```
+
+9. We're using `axios` for making API calls in the frontend. For installing axios, we can use the following command:
+
+```bash
+npm i axios
+```

@@ -4,13 +4,35 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 
+const corsOrigin = process.env.CORS_ORIGIN || "";
+const allowedOrigins = corsOrigin
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const corsOptions = {
+  credentials: true,
+  origin: (origin, callback) => {
+    // Allow non-browser tools (Postman, curl) that may not send Origin.
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    // For credentialed requests, never send literal '*'. Reflect request origin instead.
+    if (allowedOrigins.includes("*")) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+};
+
 // app.use() is used for all the middlewares. Cors comes with some power as well which are described in object
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials: true,
-  })
-);
+app.use(cors(corsOptions));
 
 // this is a example of handling data means we can accept 16kb data in form of json
 app.use(

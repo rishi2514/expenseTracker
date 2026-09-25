@@ -12,6 +12,8 @@ const Input = ({
   icon,
   iconPosition,
   onClick,
+  value,
+  onChange,
 }) => {
   return (
     <div className={`w-full ${divStyle}`}>
@@ -24,6 +26,8 @@ const Input = ({
           id={id}
           className={`peer ${inputStyle}`}
           placeholder={placeholder}
+          value={value}
+          onChange={onChange}
         />
         {isIcon && (
           <button
