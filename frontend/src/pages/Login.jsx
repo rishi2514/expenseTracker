@@ -1,43 +1,95 @@
-import React from "react";
+import React, { useState } from "react";
 import Input from "../components/Input.jsx";
+import asset1 from "../assets/asset1.png";
+import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
+import { Link } from "react-router-dom";
 
 const Login = () => {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleTogglePassword = () => {
+    setShowPassword((prevState) => !prevState);
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(34,211,238,0.16),_transparent_35%),linear-gradient(180deg,_#F7F8FC_0%,_#EEF2FF_100%)] px-4">
-      <div className="w-full max-w-md rounded-3xl border border-light-border bg-light-surface/95 p-8 shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur">
-        <div className="mb-8 text-center">
-          <p className="mb-2 text-sm font-semibold uppercase tracking-[0.24em] text-brand-primary">
-            Welcome back
-          </p>
-          <h2 className="text-3xl font-bold text-light-textPrimary">Login</h2>
-          <p className="mt-2 text-sm text-light-textSecondary">
+    <div className="flex h-screen w-full">
+      <div className="w-[50%] flex justify-center items-center">
+        <div className=" flex flex-col gap-5">
+          <h1 className="text-light-textPrimary text-[44px] font-bold leading-none">
+            Welcome Back!
+          </h1>
+          <p className="text-light-textSecondary font-normal leading-none">
             Sign in to manage your expenses.
           </p>
-        </div>
-        <form>
-          <div className="mb-4">
+          <Input
+            label={"Email"}
+            type={"email"}
+            labelStyle={"mb-1 block font-semibold text-light-textSecondary"}
+            placeholder={"john@email.com"}
+            divStyle={""}
+            inputStyle={
+              "w-full border border-light-border py-2 px-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-accent/30"
+            }
+            id={"login-email"}
+          />
+          <Input
+            label={"Password"}
+            type={"password"}
+            labelStyle={"mb-1 block font-semibold text-light-textSecondary"}
+            placeholder={"••••••••"}
+            divStyle={"relative"}
+            inputStyle={
+              "w-full border border-light-border py-2 px-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-accent/30"
+            }
+            id={"login-password"}
+            isIcon={true}
+            icon={
+              showPassword ? (
+                <IoEyeOffOutline color="text-light-textSecondary" />
+              ) : (
+                <IoEyeOutline color="text-light-textSecondary" />
+              )
+            }
+            iconPosition={"right"}
+            onClick={handleTogglePassword}
+          />
+          <div className="flex justify-between items-center text-light-textSecondary text-sm">
             <Input
-              label="Email"
-              type="email"
-              id="email"
-              placeholder="Enter your email"
+              type="checkbox"
+              label="Remember me"
+              divStyle={"flex flex-row-reverse gap-1 items-center justify-end"}
+              labelStyle={"text-[13px]"}
+              id={"remember-me"}
             />
+            <p className="hover:underline cursor-pointer w-full text-[13px] text-right text-brand-primary font-semibold">
+              Forgot Password?
+            </p>
           </div>
-          <div className="mb-6">
-            <Input
-              label="Password"
-              type="password"
-              id="password"
-              placeholder="Enter your password"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full rounded-3xl bg-brand-primary px-4 py-3 font-semibold text-white transition hover:bg-brand-primaryDark focus:outline-none focus:ring-2 focus:ring-brand-accent/40"
-          >
+          <button className="w-full bg-brand-primary text-white py-2 px-3 rounded-2xl hover:bg-brand-primaryDark transition">
             Login
           </button>
-        </form>
+          <div className="flex items-center gap-2">
+            <div className="border border-brand-primary flex-1" />
+            <div className="border w-1 h-1 border-brand-primary bg-brand-primary rounded-full" />
+            <div className="border border-brand-primary flex-1" />
+          </div>
+          <p className="text-light-textSecondary text-sm text-center">
+            Don't have an account?{" "}
+            <span className="text-brand-primary font-semibold hover:underline cursor-pointer">
+              <Link to="/register">Register</Link>
+            </span>
+          </p>
+        </div>
+      </div>
+      <div className="bg-brand-primary w-[50%] justify-center items-center flex flex-col gap-10 px-10">
+        <p className="text-dark-textPrimary text-[50px] font-bold leading-none">
+          Effortlessly manage your expenses.
+        </p>
+        <p className="text-dark-textPrimary font-normal text-[18px] leading-none">
+          Track your income, and expenses all in one place. Get overview,
+          insights, and control over your finances.
+        </p>
+        <img src={asset1} alt="Expense Tracker" className="w-[50%] h-auto" />
       </div>
     </div>
   );
