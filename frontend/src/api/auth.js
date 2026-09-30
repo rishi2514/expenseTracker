@@ -1,10 +1,12 @@
 import client from "./client";
 
 // login function to send a POST request to the backend API for user authentication
-export const login = async (email, password, isRememberMe) => {
+export const login = async (identifier, password, isRememberMe) => {
   try {
+    const isEmail = identifier?.includes("@");
     const response = await client.post("/user/login", {
-      email,
+      email: isEmail ? identifier : undefined,
+      userName: !isEmail ? identifier : undefined,
       password,
       isRememberMe,
     });

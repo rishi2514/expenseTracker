@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import asset1 from "../assets/asset1.png";
 import {
@@ -13,6 +13,7 @@ import { register } from "../api/auth";
 import PrimaryButton from "../components/PrimaryButton";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -75,7 +76,7 @@ const Register = () => {
     register(userName, name, email, password, avatar)
       .then((response) => {
         console.log("Registration successful:", response.data);
-        //TODO: Handle successful registration (e.g., redirect to login page)
+        navigate("/login", { replace: true });
       })
       .catch((err) => {
         console.error("Registration failed:", err);

@@ -2,18 +2,23 @@ import React, { useState } from "react";
 import Input from "../components/Input.jsx";
 import asset1 from "../assets/asset1.png";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { login } from "../api/auth.js";
 import PrimaryButton from "../components/PrimaryButton.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
 
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isRememberMe, setIsRememberMe] = useState(false);
+
+  const { contextLogin } = useAuth();
+  const navigate = useNavigate();
+
   const handleTogglePassword = () => {
     setShowPassword((prevState) => !prevState);
   };
@@ -23,23 +28,21 @@ const Login = () => {
   };
 
   const handleLogin = () => {
-    if (!email || !password) {
+    if (!identifier.trim() || !password) {
       setErrorMessage("Please fill in all required fields");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setErrorMessage("Please enter a valid email address");
       return;
     }
 
     setIsLoading(true);
     setErrorMessage("");
-    login(email, password, isRememberMe)
+    login(identifier.trim(), password, isRememberMe)
       .then((response) => {
-        console.log("Login successful:", response.data);
-        //TODO: Handle successful login, e.g., redirect to dashboard
+        const accessToken =
+          response.data?.data?.accessToken || response.data?.accessToken;
+        const user = response.data?.data?.user || response.data?.user;
+
+        contextLogin(accessToken, user);
+        navigate("/dashboard", { replace: true });
       })
       .catch((err) => {
         console.error("Login failed:", err);
@@ -64,16 +67,18 @@ const Login = () => {
           </p>
           <Input
             label={"Username / Email"}
-            type={"email"}
-            value={email}
-            onChange={(e) => (setErrorMessage(""), setEmail(e.target.value))}
+            type={"text"}
+            value={identifier}
+            onChange={(e) => (
+              setErrorMessage(""), setIdentifier(e.target.value)
+            )}
             labelStyle={"mb-1 block font-semibold text-light-textSecondary"}
             placeholder={"john123 / john@email.com"}
             divStyle={""}
             inputStyle={
               "w-full border border-light-border py-2 px-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-accent/30"
             }
-            id={"login-email"}
+            id={"login-identifier"}
             isRequired={true}
           />
           <Input
@@ -118,12 +123,6 @@ const Login = () => {
           {errorMessage && (
             <p className="text-red-500 text-sm font-medium">{errorMessage}</p>
           )}
-          {/* <button
-            onClick={handleLogin}
-            className="w-full bg-brand-primary text-white py-2 px-3 rounded-2xl hover:bg-brand-primaryDark transition"
-          >
-            {isLoading ? "Logging in..." : "Login"}
-          </button> */}
           <PrimaryButton
             disabled={isLoading}
             handleClick={handleLogin}

@@ -1,5 +1,11 @@
 import React, { createContext, useContext, useState } from "react";
-import { getAccessToken, setAccessToken, removeAll } from "../utils/storage.js";
+import {
+  getAccessToken,
+  setAccessToken,
+  getUser,
+  setUser,
+  removeAll,
+} from "../utils/storage.js";
 
 // Create a context for authentication
 const AuthContext = createContext(null);
@@ -9,16 +15,22 @@ export const AuthProvider = ({ children }) => {
     const token = getAccessToken();
     return Boolean(token);
   });
+  const [user, setCurrentUser] = useState(() => getUser());
 
-  const login = (token) => {
+  const contextLogin = (token, userData) => {
     if (token) {
       setAccessToken(token);
+    }
+    if (userData) {
+      setUser(userData);
+      setCurrentUser(userData);
     }
     setIsAuthenticated(true);
   };
 
-  const logout = () => {
+  const contextLogout = () => {
     removeAll();
+    setCurrentUser(null);
     setIsAuthenticated(false);
   };
 
@@ -27,8 +39,12 @@ export const AuthProvider = ({ children }) => {
       value={{
         isAuthenticated,
         setIsAuthenticated,
-        login,
-        logout,
+        user,
+        setUser: setCurrentUser,
+        contextLogin,
+        contextLogout,
+        login: contextLogin,
+        logout: contextLogout,
       }}
     >
       {children}
