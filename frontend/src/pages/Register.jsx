@@ -13,14 +13,7 @@ const Register = () => {
   const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState({
-    userName: "",
-    email: "",
-    password: "",
-    avatar: "",
-    name: "",
-    api: "",
-  });
+  const [error, setError] = useState("");
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
@@ -29,41 +22,34 @@ const Register = () => {
   const handleRegister = () => {
     // check for empty fields
     if (!userName || !email || !password) {
-      setError({
-        ...error,
-        userName: !userName ? "Username is required" : "",
-        email: !email ? "Email is required" : "",
-        password: !password ? "Password is required" : "",
-      });
+      setError("Please fill in all required fields");
       return;
     }
 
     // check for valid email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError({ ...error, email: "Please enter a valid email address" });
+      setError("Please enter a valid email address");
       return;
     }
 
     // check for password length
     if (password.length < 6) {
-      setError({
-        ...error,
-        password: "Password must be at least 6 characters long",
-      });
+      setError("Password must be at least 6 characters long");
       return;
     }
 
     // If all validations pass, proceed with registration logic
     setIsLoading(true);
+    setError("");
     register(userName, name, email, password, avatar)
       .then((response) => {
         console.log("Registration successful:", response.data);
-        // Handle successful registration (e.g., redirect to login page)
+        //TODO: Handle successful registration (e.g., redirect to login page)
       })
-      .catch((error) => {
-        console.error("Registration failed:", error);
-        // Handle registration error (e.g., display error message)
+      .catch((err) => {
+        console.error("Registration failed:", err);
+        setError(err?.message || "Registration failed. Please try again.");
       })
       .finally(() => {
         setIsLoading(false);
@@ -112,10 +98,7 @@ const Register = () => {
               label={"Username"}
               type={"text"}
               value={userName}
-              onChange={(e) => (
-                setError({ ...error, userName: "" }),
-                setUserName(e.target.value)
-              )}
+              onChange={(e) => (setError(""), setUserName(e.target.value))}
               labelStyle={"mb-1 block font-semibold text-light-textSecondary"}
               placeholder={"john_doe"}
               divStyle={""}
@@ -144,10 +127,7 @@ const Register = () => {
             label={"Email"}
             type={"email"}
             value={email}
-            onChange={(e) => (
-              setError({ ...error, email: "" }),
-              setEmail(e.target.value)
-            )}
+            onChange={(e) => (setError(""), setEmail(e.target.value))}
             labelStyle={"mb-1 block font-semibold text-light-textSecondary"}
             placeholder={"john@email.com"}
             divStyle={""}
@@ -163,10 +143,7 @@ const Register = () => {
             labelStyle={"mb-1 block font-semibold text-light-textSecondary"}
             placeholder={"••••••••"}
             value={password}
-            onChange={(e) => (
-              setError({ ...error, password: "" }),
-              setPassword(e.target.value)
-            )}
+            onChange={(e) => (setError(""), setPassword(e.target.value))}
             divStyle={"relative"}
             inputStyle={
               "w-full border border-light-border py-2 px-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-accent/30"
@@ -184,9 +161,10 @@ const Register = () => {
             onClick={handleTogglePassword}
             isRequired={true}
           />
+          {error && <p className="text-red-500 text-sm font-medium">{error}</p>}
           <button
             onClick={handleRegister}
-            disabled={isLoading}
+            // disabled={isLoading}
             className="w-full bg-brand-primary text-white py-2 px-3 rounded-2xl hover:bg-brand-primaryDark transition"
           >
             {isLoading ? "Registering..." : "Register"}

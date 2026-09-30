@@ -3,33 +3,53 @@ import Input from "../components/Input.jsx";
 import asset1 from "../assets/asset1.png";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
-import {login} from "../api/auth.js"
+import { login } from "../api/auth.js";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRememberMe, setIsRememberMe] = useState(false);
   const handleTogglePassword = () => {
     setShowPassword((prevState) => !prevState);
   };
-  const [isRememberMe, setIsRememberMe] = useState(false);
 
   const handleRememberMeChange = (prev) => {
     setIsRememberMe(!prev);
-  }
+  };
 
   const handleLogin = () => {
+    if (!email || !password) {
+      setErrorMessage("Please fill in all required fields");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMessage("Please enter a valid email address");
+      return;
+    }
+
+    setIsLoading(true);
+    setErrorMessage("");
     login(email, password, isRememberMe)
       .then((response) => {
         console.log("Login successful:", response.data);
-        // Handle successful login, e.g., redirect to dashboard
+        //TODO: Handle successful login, e.g., redirect to dashboard
       })
-      .catch((error) => {
-        console.error("Login failed:", error);
-        // Handle login error, e.g., show error message to user
+      .catch((err) => {
+        console.error("Login failed:", err);
+        setErrorMessage(
+          err?.message || "Login failed. Please check your credentials."
+        );
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-  }
+  };
 
   return (
     <div className="flex h-screen w-full">
@@ -42,17 +62,18 @@ const Login = () => {
             Sign in to manage your expenses.
           </p>
           <Input
-            label={"Email"}
+            label={"Username / Email"}
             type={"email"}
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => (setErrorMessage(""), setEmail(e.target.value))}
             labelStyle={"mb-1 block font-semibold text-light-textSecondary"}
-            placeholder={"john@email.com"}
+            placeholder={"john123 / john@email.com"}
             divStyle={""}
             inputStyle={
               "w-full border border-light-border py-2 px-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-accent/30"
             }
             id={"login-email"}
+            isRequired={true}
           />
           <Input
             label={"Password"}
@@ -60,13 +81,14 @@ const Login = () => {
             labelStyle={"mb-1 block font-semibold text-light-textSecondary"}
             placeholder={"••••••••"}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => (setErrorMessage(""), setPassword(e.target.value))}
             divStyle={"relative"}
             inputStyle={
               "w-full border border-light-border py-2 px-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-accent/30"
             }
             id={"login-password"}
             isIcon={true}
+            isRequired={true}
             icon={
               showPassword ? (
                 <IoEyeOffOutline color="text-light-textSecondary" />
@@ -92,8 +114,14 @@ const Login = () => {
               Forgot Password?
             </p>
           </div>
-          <button onClick={handleLogin} className="w-full bg-brand-primary text-white py-2 px-3 rounded-2xl hover:bg-brand-primaryDark transition">
-            Login
+          {errorMessage && (
+            <p className="text-red-500 text-sm font-medium">{errorMessage}</p>
+          )}
+          <button
+            onClick={handleLogin}
+            className="w-full bg-brand-primary text-white py-2 px-3 rounded-2xl hover:bg-brand-primaryDark transition"
+          >
+            {isLoading ? "Logging in..." : "Login"}
           </button>
           <div className="flex items-center gap-2">
             <div className="border border-brand-primary flex-1" />

@@ -43,7 +43,7 @@ const registerUser = asyncHandler(async (req, res) => {
   // either we can check like this one by one but we can add check in more advance way as well ------------------
   // if (name === "") throw new ApiError(400, "Name is required")
   if ([userName, email, password].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, "PLease fill the required fields.");
+    throw new ApiError(400, "Please fill the required fields.");
   }
 
   // email check if it contains @
