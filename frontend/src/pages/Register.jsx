@@ -2,14 +2,21 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Input from "../components/Input";
 import asset1 from "../assets/asset1.png";
-import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
+import {
+  IoEyeOffOutline,
+  IoEyeOutline,
+  IoCameraOutline,
+  IoTrashOutline,
+  IoPersonOutline,
+} from "react-icons/io5";
 import { register } from "../api/auth";
 
 const Register = () => {
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [avatar, setAvatar] = useState("");
+  const [avatar, setAvatar] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
   const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +24,28 @@ const Register = () => {
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        setError("Please select a valid image file");
+        return;
+      }
+      setAvatar(file);
+      setAvatarPreview(URL.createObjectURL(file));
+      setError("");
+    }
+  };
+
+  const handleRemoveAvatar = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setAvatar(null);
+    setAvatarPreview(null);
+    const fileInput = document.getElementById("register-avatar");
+    if (fileInput) fileInput.value = "";
   };
 
   const handleRegister = () => {
@@ -69,28 +98,67 @@ const Register = () => {
           </p>
 
           {/* Avatar Input */}
-          <div className="flex justify-center">
-            <label htmlFor="register-avatar" className="cursor-pointer">
-              <input type="file" id="register-avatar" className="hidden" />
-              <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+          <div className="flex flex-col items-center gap-1.5">
+            <div className="relative group">
+              <label
+                htmlFor="register-avatar"
+                className={`cursor-pointer block relative w-20 h-20 rounded-full overflow-hidden transition-all duration-200 shadow-sm hover:shadow-md bg-light-surfaceSecondary ${
+                  avatarPreview
+                    ? "border-2 border-brand-primary"
+                    : "border-2 border-dashed border-light-border hover:border-brand-primary"
+                }`}
+              >
+                {avatarPreview ? (
+                  <img
+                    src={avatarPreview}
+                    alt="Avatar preview"
+                    className="w-full h-full object-cover"
                   />
-                </svg>
-              </div>
-            </label>
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-light-textSecondary group-hover:text-brand-primary transition-colors">
+                    <IoPersonOutline className="text-3xl" />
+                  </div>
+                )}
 
-            <input type="file" id="register-avatar" className="hidden" />
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[10px] font-medium gap-0.5">
+                  <IoCameraOutline className="text-base" />
+                  <span>{avatarPreview ? "Change" : "Upload"}</span>
+                </div>
+              </label>
+
+              {/* Camera / Upload Badge */}
+              <label
+                htmlFor="register-avatar"
+                className="absolute bottom-0 right-0 bg-brand-primary text-white p-1.5 rounded-full shadow-md cursor-pointer hover:bg-brand-primaryDark transition-colors"
+                title={avatarPreview ? "Change Photo" : "Upload Photo"}
+              >
+                <IoCameraOutline className="text-xs" />
+              </label>
+
+              {/* Remove button if avatar is selected */}
+              {avatarPreview && (
+                <button
+                  type="button"
+                  onClick={handleRemoveAvatar}
+                  className="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-md transition-colors cursor-pointer"
+                  title="Remove Photo"
+                >
+                  <IoTrashOutline className="text-xs" />
+                </button>
+              )}
+
+              <input
+                type="file"
+                id="register-avatar"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                className="hidden"
+              />
+            </div>
+            <p className="text-[12px] text-light-textSecondary">
+              Upload profile photo <span className="text-light-textMuted">(optional)</span>
+            </p>
           </div>
 
           <div className="flex gap-4">
