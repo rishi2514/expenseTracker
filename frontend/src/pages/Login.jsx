@@ -13,9 +13,14 @@ const Login = () => {
   const handleTogglePassword = () => {
     setShowPassword((prevState) => !prevState);
   };
+  const [isRememberMe, setIsRememberMe] = useState(false);
+
+  const handleRememberMeChange = (prev) => {
+    setIsRememberMe(!prev);
+  }
 
   const handleLogin = () => {
-    login(email, password)
+    login(email, password, isRememberMe)
       .then((response) => {
         console.log("Login successful:", response.data);
         // Handle successful login, e.g., redirect to dashboard
@@ -76,6 +81,9 @@ const Login = () => {
             <Input
               type="checkbox"
               label="Remember me"
+              value={isRememberMe}
+              onChange={() => handleRememberMeChange(isRememberMe)}
+              checked={isRememberMe}
               divStyle={"flex flex-row-reverse gap-1 items-center justify-end"}
               labelStyle={"text-[13px]"}
               id={"remember-me"}

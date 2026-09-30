@@ -99,7 +99,7 @@ const loginUser = asyncHandler(async (req, res) => {
   // send tokens in cookies
 
   // taking data from the api request
-  const { userName, email, password } = req.body;
+  const { userName, email, password, isRememberMe } = req.body;
 
   // validating for username or email
   if (!(userName || email)) {
@@ -127,23 +127,42 @@ const loginUser = asyncHandler(async (req, res) => {
     user._id
   );
 
-  // options for cookies for making them secure
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
+  // if the user has checked the remember me checkbox then we will send the tokens in cookies else we will send it in response body so that frontend store it and clear when the user closes the session or tab.
+  if (isRememberMe) {
+    // options for cookies for making them secure
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
 
-  // removing the password and refreshToken from fetched user. Not making another db call
-  const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
+    // removing the password and refreshToken from fetched user. Not making another db call
+    const loggedInUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
 
-  // setting cookies directly and sending data
-  return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(
+    // setting cookies directly and sending data
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            user: loggedInUser,
+            accessToken,
+            refreshToken,
+          },
+          "User logged in successfully."
+        )
+      );
+  } else {
+    // removing the password and refreshToken from fetched user. Not making another db call
+    const loggedInUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
+
+    return res.status(200).json(
       new ApiResponse(
         200,
         {
@@ -154,6 +173,7 @@ const loginUser = asyncHandler(async (req, res) => {
         "User logged in successfully."
       )
     );
+  }
 });
 
 // added auth middleware which has the access of user and passed it in req so using that user._id to find the user and clear cookies and unset the refresh token
