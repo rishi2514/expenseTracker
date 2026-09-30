@@ -101,6 +101,8 @@ const loginUser = asyncHandler(async (req, res) => {
   // taking data from the api request
   const { userName, email, password, isRememberMe } = req.body;
 
+  const clientType = req.headers["x-client-type"];
+
   // validating for username or email
   if (!(userName || email)) {
     throw new ApiError(400, "Username or email is required.");
@@ -127,23 +129,26 @@ const loginUser = asyncHandler(async (req, res) => {
     user._id
   );
 
-  // if the user has checked the remember me checkbox then we will send the tokens in cookies else we will send it in response body so that frontend store it and clear when the user closes the session or tab.
+  const options = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // set secure to true in production
+  };
+
+  // if the user has checked the remember me checkbox then we will set the maxAge of the cookies to 7 days otherwise it will be session cookie which will be deleted when the browser is closed
   if (isRememberMe) {
-    // options for cookies for making them secure
-    const options = {
-      httpOnly: true,
-      secure: true,
-    };
+    options.maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+  }
 
-    // removing the password and refreshToken from fetched user. Not making another db call
-    const loggedInUser = await User.findById(user._id).select(
-      "-password -refreshToken"
-    );
+  // removing the password and refreshToken from fetched user. Not making another db call
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
 
-    // setting cookies directly and sending data
+  // if the client type is web, then we will set the maxAge of the cookies to 7 days otherwise it will be session cookie which will be deleted when the browser is closed
+  if (clientType === "web") {
+    // setting cookies directly and sending data if the client is web
     return res
       .status(200)
-      .cookie("accessToken", accessToken, options)
       .cookie("refreshToken", refreshToken, options)
       .json(
         new ApiResponse(
@@ -151,17 +156,12 @@ const loginUser = asyncHandler(async (req, res) => {
           {
             user: loggedInUser,
             accessToken,
-            refreshToken,
           },
           "User logged in successfully."
         )
       );
   } else {
-    // removing the password and refreshToken from fetched user. Not making another db call
-    const loggedInUser = await User.findById(user._id).select(
-      "-password -refreshToken"
-    );
-
+    // if the client is not web, then we will send the tokens in the response body
     return res.status(200).json(
       new ApiResponse(
         200,
@@ -208,6 +208,8 @@ const refreshToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
 
+  const clientType = req.headers["x-client-type"];
+
   if (!incomingRefreshToken) {
     throw new ApiError(401, "Unauthorized request.");
   }
@@ -233,7 +235,7 @@ const refreshToken = asyncHandler(async (req, res) => {
 
     const options = {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production", // set secure to true in production
     };
 
     // generate new tokens
@@ -241,18 +243,34 @@ const refreshToken = asyncHandler(async (req, res) => {
       user._id
     );
 
-    // save and return the new tokens
-    return res
-      .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
-      .json(
+    if (clientType === "web") {
+      // if the client type is web, then we will set the maxAge of the cookies to 7 days otherwise it will be session cookie which will be deleted when the browser is closed
+      options.maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+      // save and return the new tokens
+      return res
+        .status(200)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+          new ApiResponse(
+            200,
+            { accessToken },
+            "Access token refreshed successfully."
+          )
+        );
+    } else {
+      // if the client is not web, then we will send the tokens in the response body
+      return res.status(200).json(
         new ApiResponse(
           200,
-          { accessToken, refreshToken },
+          {
+            accessToken,
+            refreshToken,
+          },
           "Access token refreshed successfully."
         )
       );
+    }
   } catch (error) {
     throw new ApiError(401, error?.message || "Invalid token");
   }
