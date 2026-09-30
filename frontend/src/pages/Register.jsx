@@ -10,6 +10,7 @@ import {
   IoPersonOutline,
 } from "react-icons/io5";
 import { register } from "../api/auth";
+import PrimaryButton from "../components/PrimaryButton";
 
 const Register = () => {
   const [userName, setUserName] = useState("");
@@ -230,13 +231,11 @@ const Register = () => {
             isRequired={true}
           />
           {error && <p className="text-red-500 text-sm font-medium">{error}</p>}
-          <button
-            onClick={handleRegister}
-            // disabled={isLoading}
-            className="w-full bg-brand-primary text-white py-2 px-3 rounded-2xl hover:bg-brand-primaryDark transition"
-          >
-            {isLoading ? "Registering..." : "Register"}
-          </button>
+          <PrimaryButton
+            disabled={isLoading}
+            handleClick={handleRegister}
+            text={isLoading ? "Registering..." : "Register"}
+          />
           <div className="flex items-center gap-2">
             <div className="border border-brand-primary flex-1" />
             <p className="text-light-textSecondary text-[13px]">or</p>

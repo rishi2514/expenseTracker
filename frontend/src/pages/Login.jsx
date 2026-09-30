@@ -4,6 +4,7 @@ import asset1 from "../assets/asset1.png";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { login } from "../api/auth.js";
+import PrimaryButton from "../components/PrimaryButton.jsx";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -117,12 +118,17 @@ const Login = () => {
           {errorMessage && (
             <p className="text-red-500 text-sm font-medium">{errorMessage}</p>
           )}
-          <button
+          {/* <button
             onClick={handleLogin}
             className="w-full bg-brand-primary text-white py-2 px-3 rounded-2xl hover:bg-brand-primaryDark transition"
           >
             {isLoading ? "Logging in..." : "Login"}
-          </button>
+          </button> */}
+          <PrimaryButton
+            disabled={isLoading}
+            handleClick={handleLogin}
+            text={isLoading ? "Logging in..." : "Login"}
+          />
           <div className="flex items-center gap-2">
             <div className="border border-brand-primary flex-1" />
             <p className="text-light-textSecondary text-[13px]">or</p>
