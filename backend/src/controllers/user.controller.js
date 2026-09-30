@@ -40,6 +40,7 @@ const registerUser = asyncHandler(async (req, res) => {
   // req.body captures the data from the request
   const { name, userName, email, password, avatar } = req.body;
 
+  const clientType = req.headers["x-client-type"];
   // either we can check like this one by one but we can add check in more advance way as well ------------------
   // if (name === "") throw new ApiError(400, "Name is required")
   if ([userName, email, password].some((field) => field?.trim() === "")) {
@@ -83,10 +84,44 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong while registering the user.");
   }
 
-  // sending response as pre defined structure via the ApiResponse utility
-  return res
-    .status(200)
-    .json(new ApiResponse(200, createdUser, "User registered successfully."));
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+    user._id
+  );
+
+  const options = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // set secure to true in production
+  };
+
+  if (clientType === "web") {
+    // setting cookies directly and sending data if the client is web
+    return res
+      .status(200)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            user: createdUser,
+            accessToken,
+          },
+          "User logged in successfully."
+        )
+      );
+  } else {
+    // if the client is not web, then we will send the tokens in the response body
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          user: createdUser,
+          accessToken,
+          refreshToken,
+        },
+        "User logged in successfully."
+      )
+    );
+  }
 });
 
 const loginUser = asyncHandler(async (req, res) => {
