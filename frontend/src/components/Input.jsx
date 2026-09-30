@@ -14,11 +14,13 @@ const Input = ({
   onClick,
   value,
   onChange,
+  isRequired,
+  error,
 }) => {
   return (
     <div className={`w-full ${divStyle}`}>
       <label htmlFor={id} className={`peer ${labelStyle}`}>
-        {label}
+        {label} {isRequired && <span className="text-red-500">*</span>}
       </label>
       <div className="relative">
         <input
@@ -38,6 +40,7 @@ const Input = ({
           </button>
         )}
       </div>
+      {error && <p className="text-red-500 text-sm mt-1 ml-1">{error}</p>}
     </div>
   );
 };
