@@ -47,3 +47,13 @@ export const register = async (userName, name, email, password, avatar) => {
     throw error.response?.data || error;
   }
 };
+
+// refreshAccessToken function to request new tokens using the refresh-token route
+export const refreshAccessToken = async () => {
+  try {
+    const response = await client.post("/user/refresh-token");
+    return response;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
