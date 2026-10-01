@@ -1,15 +1,23 @@
-import React from "react";
+import { buttonPrimary } from "../utils/styles";
+import { Spinner } from "./Spinner";
 
-const PrimaryButton = ({handleClick, text, disabled}) => {
-  return (
-    <button
-      onClick={handleClick}
-      disabled={disabled}
-      className="w-full bg-brand-primary text-white py-2 px-3 rounded-2xl hover:bg-brand-primaryDark transition"
-    >
-      {text}
-    </button>
-  );
-};
+const PrimaryButton = ({
+  handleClick,
+  text,
+  disabled,
+  type = "button",
+  loading = false,
+  className = "",
+}) => (
+  <button
+    type={type}
+    onClick={handleClick}
+    disabled={disabled || loading}
+    className={`${buttonPrimary} ${className}`}
+  >
+    {loading && <Spinner className="h-4 w-4" />}
+    {text}
+  </button>
+);
 
 export default PrimaryButton;

@@ -1,5 +1,3 @@
-import React from "react";
-
 const Input = ({
   label,
   type,
@@ -14,33 +12,48 @@ const Input = ({
   onClick,
   value,
   onChange,
+  checked,
   isRequired,
   error,
+  autoComplete,
+  disabled,
+  name,
+  iconLabel = "Toggle",
 }) => {
   return (
-    <div className={`w-full ${divStyle}`}>
-      <label htmlFor={id} className={`peer ${labelStyle}`}>
-        {label} {isRequired && <span className="text-red-500">*</span>}
-      </label>
+    <div className={`w-full ${divStyle || ""}`}>
+      {label && (
+        <label htmlFor={id} className={labelStyle}>
+          {label} {isRequired && <span className="text-semantic-danger">*</span>}
+        </label>
+      )}
       <div className="relative">
         <input
           type={type}
           id={id}
-          className={`peer ${inputStyle}`}
+          name={name}
+          className={`peer ${inputStyle || ""}`}
           placeholder={placeholder}
           value={value}
           onChange={onChange}
+          checked={checked}
+          autoComplete={autoComplete}
+          disabled={disabled}
         />
         {isIcon && (
           <button
-            className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${iconPosition === "left" ? "left-3 right-auto" : ""}`}
+            type="button"
             onClick={onClick}
+            aria-label={iconLabel}
+            className={`absolute top-1/2 -translate-y-1/2 rounded-md p-1 text-light-textMuted transition hover:text-light-textPrimary ${
+              iconPosition === "left" ? "left-3" : "right-3"
+            }`}
           >
             {icon}
           </button>
         )}
       </div>
-      {error && <p className="text-red-500 text-sm mt-1 ml-1">{error}</p>}
+      {error && <p className="mt-1 ml-1 text-sm text-semantic-danger">{error}</p>}
     </div>
   );
 };

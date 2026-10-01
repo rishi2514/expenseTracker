@@ -1,11 +1,12 @@
-import React, { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
   getAccessToken,
   setAccessToken,
   getUser,
-  setUser,
+  setUser as persistUser,
   removeAll,
 } from "../utils/storage.js";
+import { getMe } from "../api/users.js";
 
 // Create a context for authentication
 const AuthContext = createContext(null);
@@ -22,7 +23,7 @@ export const AuthProvider = ({ children }) => {
       setAccessToken(token);
     }
     if (userData) {
-      setUser(userData);
+      persistUser(userData);
       setCurrentUser(userData);
     }
     setIsAuthenticated(true);
@@ -34,6 +35,36 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
   };
 
+  // Updates the user both in memory and in localStorage (profile / avatar edits).
+  const updateUser = (userData) => {
+    if (!userData) return;
+    persistUser(userData);
+    setCurrentUser(userData);
+  };
+
+  // Sync the stored profile with the backend once on mount so stale data
+  // (renames, new avatar) is refreshed. The client handles token refresh.
+  useEffect(() => {
+    if (!getAccessToken()) return undefined;
+    let stale = false;
+
+    getMe()
+      .then((response) => {
+        const me = response?.data;
+        if (!stale && me) {
+          persistUser(me);
+          setCurrentUser(me);
+        }
+      })
+      .catch(() => {
+        // Silently ignore — the interceptor already handles expired sessions.
+      });
+
+    return () => {
+      stale = true;
+    };
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -41,6 +72,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated,
         user,
         setUser: setCurrentUser,
+        updateUser,
         contextLogin,
         contextLogout,
         login: contextLogin,

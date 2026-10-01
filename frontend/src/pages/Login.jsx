@@ -1,17 +1,18 @@
-import React, { useState } from "react";
-import Input from "../components/Input.jsx";
-import asset1 from "../assets/asset1.png";
-import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../api/auth.js";
+import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
+import Input from "../components/Input.jsx";
 import PrimaryButton from "../components/PrimaryButton.jsx";
+import asset1 from "../assets/asset1.png";
+import { login } from "../api/auth.js";
 import { useAuth } from "../context/AuthContext.jsx";
+import { getErrorMessage } from "../utils/error.js";
+import { inputClasses, labelClasses } from "../utils/styles.js";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isRememberMe, setIsRememberMe] = useState(false);
@@ -19,15 +20,8 @@ const Login = () => {
   const { contextLogin } = useAuth();
   const navigate = useNavigate();
 
-  const handleTogglePassword = () => {
-    setShowPassword((prevState) => !prevState);
-  };
-
-  const handleRememberMeChange = (prev) => {
-    setIsRememberMe(!prev);
-  };
-
-  const handleLogin = () => {
+  const handleLogin = (event) => {
+    event?.preventDefault();
     if (!identifier.trim() || !password) {
       setErrorMessage("Please fill in all required fields");
       return;
@@ -45,10 +39,7 @@ const Login = () => {
         navigate("/dashboard", { replace: true });
       })
       .catch((err) => {
-        console.error("Login failed:", err);
-        setErrorMessage(
-          err?.message || "Login failed. Please check your credentials."
-        );
+        setErrorMessage(getErrorMessage(err, "Login failed. Please check your credentials."));
       })
       .finally(() => {
         setIsLoading(false);
@@ -56,100 +47,141 @@ const Login = () => {
   };
 
   return (
-    <div className="flex h-screen w-full">
-      <div className="w-[50%] flex justify-center items-center">
-        <div className=" flex flex-col gap-5">
-          <h1 className="text-light-textPrimary text-[44px] font-bold leading-none">
-            Welcome Back!
+    <div className="grid min-h-screen bg-light-background lg:grid-cols-2">
+      {/* Form side */}
+      <div className="flex items-center justify-center px-5 py-10 sm:px-10">
+        <div className="w-full max-w-md">
+          <Link
+            to="/"
+            className="mb-8 inline-block text-sm font-semibold text-light-textSecondary transition hover:text-brand-primary"
+          >
+            ← Back to home
+          </Link>
+
+          <h1 className="text-3xl font-bold tracking-tight text-light-textPrimary sm:text-4xl">
+            Welcome back!
           </h1>
-          <p className="text-light-textSecondary font-normal leading-none">
+          <p className="mt-2 text-light-textSecondary">
             Sign in to manage your expenses.
           </p>
-          <Input
-            label={"Username / Email"}
-            type={"text"}
-            value={identifier}
-            onChange={(e) => (
-              setErrorMessage(""), setIdentifier(e.target.value)
-            )}
-            labelStyle={"mb-1 block font-semibold text-light-textSecondary"}
-            placeholder={"john123 / john@email.com"}
-            divStyle={""}
-            inputStyle={
-              "w-full border border-light-border py-2 px-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-accent/30"
-            }
-            id={"login-identifier"}
-            isRequired={true}
-          />
-          <Input
-            label={"Password"}
-            type={showPassword ? "text" : "password"}
-            labelStyle={"mb-1 block font-semibold text-light-textSecondary"}
-            placeholder={"••••••••"}
-            value={password}
-            onChange={(e) => (setErrorMessage(""), setPassword(e.target.value))}
-            divStyle={"relative"}
-            inputStyle={
-              "w-full border border-light-border py-2 px-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-accent/30"
-            }
-            id={"login-password"}
-            isIcon={true}
-            isRequired={true}
-            icon={
-              showPassword ? (
-                <IoEyeOffOutline color="text-light-textSecondary" />
-              ) : (
-                <IoEyeOutline color="text-light-textSecondary" />
-              )
-            }
-            iconPosition={"right"}
-            onClick={handleTogglePassword}
-          />
-          <div className="flex justify-between items-center text-light-textSecondary text-sm">
+
+          <form onSubmit={handleLogin} className="mt-8 space-y-5" noValidate>
             <Input
-              type="checkbox"
-              label="Remember me"
-              value={isRememberMe}
-              onChange={() => handleRememberMeChange(isRememberMe)}
-              checked={isRememberMe}
-              divStyle={"flex flex-row-reverse gap-1 items-center justify-end"}
-              labelStyle={"text-[13px]"}
-              id={"remember-me"}
+              label="Username / Email"
+              type="text"
+              value={identifier}
+              onChange={(e) => {
+                setErrorMessage("");
+                setIdentifier(e.target.value);
+              }}
+              labelStyle={labelClasses}
+              placeholder="john123 / john@email.com"
+              inputStyle={inputClasses}
+              id="login-identifier"
+              autoComplete="username"
+              isRequired
             />
-            <p className="hover:underline cursor-pointer w-full text-[13px] text-right text-brand-primary font-semibold">
-              Forgot Password?
-            </p>
+
+            <Input
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              labelStyle={labelClasses}
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => {
+                setErrorMessage("");
+                setPassword(e.target.value);
+              }}
+              divStyle="relative"
+              inputStyle={`${inputClasses} pr-11`}
+              id="login-password"
+              autoComplete="current-password"
+              isIcon
+              isRequired
+              iconLabel={showPassword ? "Hide password" : "Show password"}
+              icon={
+                showPassword ? (
+                  <IoEyeOffOutline className="text-lg" />
+                ) : (
+                  <IoEyeOutline className="text-lg" />
+                )
+              }
+              iconPosition="right"
+              onClick={() => setShowPassword((show) => !show)}
+            />
+
+            <div className="flex items-center justify-between gap-3">
+              <Input
+                type="checkbox"
+                label="Remember me"
+                value={isRememberMe}
+                onChange={() => setIsRememberMe((prev) => !prev)}
+                checked={isRememberMe}
+                divStyle="flex flex-row-reverse items-center gap-2"
+                labelStyle="text-[13px] font-medium text-light-textSecondary mb-0!"
+                id="remember-me"
+              />
+            </div>
+
+            {errorMessage && (
+              <p
+                role="alert"
+                className="rounded-xl border border-semantic-danger/30 bg-semantic-danger/5 px-4 py-2.5 text-sm font-medium text-semantic-danger"
+              >
+                {errorMessage}
+              </p>
+            )}
+
+            <PrimaryButton
+              type="submit"
+              disabled={isLoading}
+              loading={isLoading}
+              text={isLoading ? "Logging in…" : "Login"}
+              className="py-3"
+            />
+          </form>
+
+          <div className="my-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-light-border" />
+            <p className="text-[13px] text-light-textMuted">or</p>
+            <div className="h-px flex-1 bg-light-border" />
           </div>
-          {errorMessage && (
-            <p className="text-red-500 text-sm font-medium">{errorMessage}</p>
-          )}
-          <PrimaryButton
-            disabled={isLoading}
-            handleClick={handleLogin}
-            text={isLoading ? "Logging in..." : "Login"}
-          />
-          <div className="flex items-center gap-2">
-            <div className="border border-brand-primary flex-1" />
-            <p className="text-light-textSecondary text-[13px]">or</p>
-            <div className="border border-brand-primary flex-1" />
-          </div>
-          <p className="text-light-textSecondary text-sm text-center">
+
+          <p className="text-center text-sm text-light-textSecondary">
             Don't have an account?{" "}
-            <span className="text-brand-primary font-semibold hover:underline cursor-pointer">
-              <Link to="/register">Register</Link>
-            </span>
+            <Link
+              to="/register"
+              className="font-semibold text-brand-primary hover:underline"
+            >
+              Register
+            </Link>
           </p>
         </div>
       </div>
-      <div className="bg-brand-primary w-[50%] justify-center items-center flex flex-col gap-10 px-10">
-        <p className="text-dark-textPrimary text-[50px] font-bold leading-none">
+
+      {/* Visual side */}
+      <div className="relative hidden overflow-hidden bg-gradient-to-br from-brand-primary via-brand-primaryDark to-violet-600 px-10 py-16 lg:flex lg:flex-col lg:items-center lg:justify-center lg:gap-10">
+        <div
+          className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-white/10"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute -bottom-24 -left-16 h-80 w-80 rounded-full bg-white/10"
+          aria-hidden="true"
+        />
+
+        <p className="relative max-w-md text-center text-4xl font-bold leading-tight text-white xl:text-5xl">
           Effortlessly manage your expenses.
         </p>
-        <p className="text-dark-textPrimary font-normal text-[18px] leading-none">
-          Track your income, and expenses all in one place. Get overview,
+        <p className="relative max-w-md text-center text-lg leading-relaxed text-white/85">
+          Track your income and expenses all in one place. Get an overview,
           insights, and control over your finances.
         </p>
-        <img src={asset1} alt="Expense Tracker" className="w-[50%] h-auto" />
+        <img
+          src={asset1}
+          alt="Expense tracker preview"
+          className="relative w-[68%] max-w-md rounded-2xl shadow-2xl"
+        />
       </div>
     </div>
   );

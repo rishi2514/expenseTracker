@@ -3,7 +3,9 @@ import { getAccessToken, setAccessToken, removeAll } from "../utils/storage.js";
 
 // create a axios instance with base url and headers
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  // Absolute backend URL when configured, otherwise fall back to the same-origin
+  // path which the Vite dev proxy forwards to the backend.
+  baseURL: import.meta.env.VITE_API_BASE_URL || "/api/v1",
   headers: {
     "Content-Type": "application/json",
     "X-Client-Type": "web", // custom header to identify the client type
@@ -57,7 +59,7 @@ client.interceptors.response.use(
             originalRequest.headers.Authorization = `Bearer ${token}`;
             return client(originalRequest);
           })
-          .catch((err) => Promise.reject(err));
+          .catch((err) => Promise.reject(err?.response?.data ?? err));
       }
 
       originalRequest._retry = true;
@@ -85,13 +87,15 @@ client.interceptors.response.use(
         ) {
           window.location.href = "/login";
         }
-        return Promise.reject(refreshError);
+        return Promise.reject(refreshError?.response?.data ?? refreshError);
       } finally {
         isRefreshing = false;
       }
     }
 
-    return Promise.reject(error);
+    // Reject with the backend body ({ message, statusCode, ... }) when present
+    // so callers always deal with a consistent error shape.
+    return Promise.reject(error?.response?.data ?? error);
   }
 );
 
