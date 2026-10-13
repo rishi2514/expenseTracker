@@ -17,8 +17,8 @@ import { getInitials } from "../utils/format";
 import { colorForName } from "../utils/palette";
 import Avatar from "./Avatar";
 import { IconBase } from "react-icons/lib";
-import { RiExpandRightLine } from "react-icons/ri";
-import { RiExpandLeftLine } from "react-icons/ri";
+import { MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
+import { MdOutlineKeyboardDoubleArrowLeft } from "react-icons/md";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", Icon: IoGridOutline },
@@ -79,7 +79,7 @@ const AppLayout = ({ children }) => {
         className="hidden md:flex absolute -right-4 top-12 w-8 h-8 bg-brand-primary rounded-full items-center justify-center text-white cursor-pointer z-50 hover:bg-brand-primaryDark transition-colors"
         onClick={() => setExpanded(!expanded)}
       >
-        {expanded ? <RiExpandLeftLine /> : <RiExpandRightLine />}
+        {expanded ? <MdOutlineKeyboardDoubleArrowLeft /> : <MdOutlineKeyboardDoubleArrowRight />}
       </div>
 
       {/* Brand */}
