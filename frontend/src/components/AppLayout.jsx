@@ -158,19 +158,6 @@ const AppLayout = ({ children }) => {
       <div
         className={`flex min-h-screen flex-col ${expanded ? "pl-60" : "pl-20"}`}
       >
-        <header className="sticky top-0 z-30 border-b border-light-border bg-light-background/85 backdrop-blur">
-          <div className="mx-auto flex h-16 w-full max-w-[1600px] items-center gap-3 px-4 sm:px-6 lg:px-8">
-            <div className="min-w-0 flex-1">
-              <h1 className="truncate text-lg font-bold tracking-tight text-light-textPrimary">
-                {meta.title}
-              </h1>
-              <p className="hidden truncate text-xs text-light-textMuted sm:block">
-                {meta.subtitle}
-              </p>
-            </div>
-          </div>
-        </header>
-
         <main className="mx-auto w-full max-w-[1600px] flex-1 px-4 py-6 sm:px-6 lg:px-8">
           {children}
         </main>
