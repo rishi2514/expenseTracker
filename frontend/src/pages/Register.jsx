@@ -22,7 +22,8 @@ const Register = () => {
   const toast = useToast();
 
   const [userName, setUserName] = useState("");
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [avatar, setAvatar] = useState(null);
@@ -70,9 +71,11 @@ const Register = () => {
       return;
     }
 
+    const name = `${firstName.trim()} ${lastName.trim()}`.trim();
+
     setIsLoading(true);
     setError("");
-    register(userName.trim(), name.trim(), email.trim(), password, avatar)
+    register(userName.trim(), name, email.trim(), password, avatar)
       .then((response) => {
         // The backend returns tokens on register — sign the user in right away.
         const accessToken =
@@ -88,7 +91,9 @@ const Register = () => {
         }
       })
       .catch((err) => {
-        setError(getErrorMessage(err, "Registration failed. Please try again."));
+        setError(
+          getErrorMessage(err, "Registration failed. Please try again.")
+        );
       })
       .finally(() => {
         setIsLoading(false);
@@ -96,9 +101,9 @@ const Register = () => {
   };
 
   return (
-    <div className="grid min-h-screen bg-light-background lg:grid-cols-2">
+    <div className="flex h-screen bg-light-background">
       {/* Visual side (first column on large screens) */}
-      <div className="relative hidden overflow-hidden bg-gradient-to-br from-brand-primary via-brand-primaryDark to-violet-600 px-10 py-16 lg:flex lg:flex-col lg:items-center lg:justify-center lg:gap-10">
+      <div className="relative w-[50%] hidden h-screen overflow-hidden bg-linear-to-br from-brand-primary to-brand-primaryDark px-10 py-16 lg:flex lg:flex-col lg:items-center lg:justify-center lg:gap-10">
         <div
           className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-white/10"
           aria-hidden="true"
@@ -108,7 +113,7 @@ const Register = () => {
           aria-hidden="true"
         />
 
-        <p className="relative max-w-md text-center text-4xl font-bold leading-tight text-white xl:text-5xl">
+        <p className="relative max-w-md text-center text-4xl font-bold leading-tight text-white">
           Effortlessly manage your expenses.
         </p>
         <p className="relative max-w-md text-center text-lg leading-relaxed text-white/85">
@@ -118,90 +123,121 @@ const Register = () => {
         <img
           src={asset1}
           alt="Expense tracker preview"
-          className="relative w-[68%] max-w-md rounded-2xl shadow-2xl"
+          className="relative w-[50%] max-w-md rounded-2xl shadow-2xl"
         />
       </div>
 
       {/* Form side */}
-      <div className="flex items-center justify-center px-5 py-10 sm:px-10">
-        <div className="w-full max-w-md">
+      <div className="flex w-[50%] items-center justify-center overflow-y-auto">
+        <div className="w-full h-screen max-w-md px-5 sm:px-10 pt-10">
           <Link
             to="/"
-            className="mb-8 inline-block text-sm font-semibold text-light-textSecondary transition hover:text-brand-primary"
+            className="mb-5 inline-block text-sm font-semibold text-light-textSecondary transition hover:text-brand-primary cursor-pointer"
           >
             ← Back to home
           </Link>
 
-          <h1 className="text-3xl font-bold tracking-tight text-light-textPrimary sm:text-4xl">
+          <h1 className="text-2xl font-bold tracking-tight text-light-textPrimary sm:text-3xl">
             Welcome!
           </h1>
-          <p className="mt-2 text-light-textSecondary">
+          <p className="mt-2 text-light-textSecondary text-sm">
             Fill in your details to create your account and start managing your
             expenses.
           </p>
 
-          {/* Avatar picker */}
-          <div className="mt-7 flex flex-col items-center gap-1.5">
-            <div className="group relative">
-              <label
-                htmlFor="register-avatar"
-                className={`block h-20 w-20 cursor-pointer overflow-hidden rounded-full transition-all duration-200 shadow-sm hover:shadow-md ${
-                  avatarPreview
-                    ? "border-2 border-brand-primary"
-                    : "border-2 border-dashed border-light-border bg-light-surfaceSecondary hover:border-brand-primary"
-                }`}
-              >
-                {avatarPreview ? (
-                  <img
-                    src={avatarPreview}
-                    alt="Avatar preview"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full flex-col items-center justify-center gap-0.5 text-light-textSecondary transition-colors group-hover:text-brand-primary">
-                    <IoPersonOutline className="text-3xl" />
-                  </div>
-                )}
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5 bg-black/40 text-[10px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
-                  <IoCameraOutline className="text-base" />
-                  <span>{avatarPreview ? "Change" : "Upload"}</span>
-                </div>
-              </label>
-
-              <label
-                htmlFor="register-avatar"
-                className="absolute bottom-0 right-0 cursor-pointer rounded-full bg-brand-primary p-1.5 text-white shadow-md transition hover:bg-brand-primaryDark"
-                title={avatarPreview ? "Change photo" : "Upload photo"}
-              >
-                <IoCameraOutline className="text-xs" />
-              </label>
-
-              {avatarPreview && (
-                <button
-                  type="button"
-                  onClick={handleRemoveAvatar}
-                  className="absolute -right-1 -top-1 cursor-pointer rounded-full bg-semantic-danger p-1 text-white shadow-md transition hover:brightness-90"
-                  title="Remove photo"
+          <div className="flex justify-between gap-5 items-center mt-7">
+            {/* Avatar picker */}
+            <div className="flex w-[50%] flex-col items-center gap-1.5">
+              <div className="group relative">
+                <label
+                  htmlFor="register-avatar"
+                  className={`block h-20 w-20 cursor-pointer overflow-hidden rounded-full transition-all duration-200 shadow-sm hover:shadow-md ${
+                    avatarPreview
+                      ? "border-2 border-brand-primary"
+                      : "border-2 border-dashed border-light-border bg-light-surfaceSecondary hover:border-brand-primary"
+                  }`}
                 >
-                  <IoTrashOutline className="text-xs" />
-                </button>
-              )}
+                  {avatarPreview ? (
+                    <img
+                      src={avatarPreview}
+                      alt="Avatar preview"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full flex-col items-center justify-center gap-0.5 text-light-textSecondary transition-colors group-hover:text-brand-primary">
+                      <IoPersonOutline className="text-3xl" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5 bg-black/40 text-[10px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
+                    <IoCameraOutline className="text-base" />
+                    <span>{avatarPreview ? "Change" : "Upload"}</span>
+                  </div>
+                </label>
 
-              <input
-                type="file"
-                id="register-avatar"
-                accept="image/*"
-                onChange={handleAvatarChange}
-                className="hidden"
+                <label
+                  htmlFor="register-avatar"
+                  className="absolute bottom-0 right-0 cursor-pointer rounded-full bg-brand-primary p-1.5 text-white shadow-md transition hover:bg-brand-primaryDark"
+                  title={avatarPreview ? "Change photo" : "Upload photo"}
+                >
+                  <IoCameraOutline className="text-xs" />
+                </label>
+
+                {avatarPreview && (
+                  <button
+                    type="button"
+                    onClick={handleRemoveAvatar}
+                    className="absolute -right-1 -top-1 cursor-pointer rounded-full bg-semantic-danger p-1 text-white shadow-md transition hover:brightness-90"
+                    title="Remove photo"
+                  >
+                    <IoTrashOutline className="text-xs" />
+                  </button>
+                )}
+
+                <input
+                  type="file"
+                  id="register-avatar"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                />
+              </div>
+              <p className="text-xs text-light-textSecondary">
+                Profile photo{" "}
+                <span className="text-light-textMuted">(optional)</span>
+              </p>
+            </div>
+            <div className="flex flex-col gap-5">
+              <Input
+                label="First Name"
+                type="text"
+                value={firstName}
+                onChange={(e) => {
+                  setError("");
+                  setFirstName(e.target.value);
+                }}
+                labelStyle={labelClasses}
+                placeholder="John"
+                inputStyle={inputClasses}
+                id="register-first-name"
+                autoComplete="first-name"
+              />
+              <Input
+                label="Last Name"
+                type="text"
+                value={lastName}
+                onChange={(e) => {
+                  setError("");
+                  setLastName(e.target.value);
+                }}
+                labelStyle={labelClasses}
+                placeholder="Doe"
+                inputStyle={inputClasses}
+                id="register-last-name"
+                autoComplete="last-name"
               />
             </div>
-            <p className="text-xs text-light-textSecondary">
-              Profile photo{" "}
-              <span className="text-light-textMuted">(optional)</span>
-            </p>
           </div>
-
-          <form onSubmit={handleRegister} className="mt-6 space-y-5" noValidate>
+          <form onSubmit={handleRegister} className="mt-5 space-y-5" noValidate>
             <div className="grid gap-5 sm:grid-cols-2">
               <Input
                 label="Username"
@@ -219,33 +255,21 @@ const Register = () => {
                 isRequired
               />
               <Input
-                label="Full Name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                label="Email"
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setError("");
+                  setEmail(e.target.value);
+                }}
                 labelStyle={labelClasses}
-                placeholder="John Doe"
+                placeholder="john@email.com"
                 inputStyle={inputClasses}
-                id="register-name"
-                autoComplete="name"
+                id="register-email"
+                autoComplete="email"
+                isRequired
               />
             </div>
-
-            <Input
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setError("");
-                setEmail(e.target.value);
-              }}
-              labelStyle={labelClasses}
-              placeholder="john@email.com"
-              inputStyle={inputClasses}
-              id="register-email"
-              autoComplete="email"
-              isRequired
-            />
 
             <Input
               label="Password"
@@ -289,7 +313,7 @@ const Register = () => {
               disabled={isLoading}
               loading={isLoading}
               text={isLoading ? "Creating account…" : "Register"}
-              className="py-3"
+              className="py-3 w-full"
             />
           </form>
 
@@ -299,7 +323,7 @@ const Register = () => {
             <div className="h-px flex-1 bg-light-border" />
           </div>
 
-          <p className="text-center text-sm text-light-textSecondary">
+          <p className="text-center text-sm text-light-textSecondary pb-10">
             Already have an account?{" "}
             <Link
               to="/login"

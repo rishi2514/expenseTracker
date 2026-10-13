@@ -39,7 +39,9 @@ const Login = () => {
         navigate("/dashboard", { replace: true });
       })
       .catch((err) => {
-        setErrorMessage(getErrorMessage(err, "Login failed. Please check your credentials."));
+        setErrorMessage(
+          getErrorMessage(err, "Login failed. Please check your credentials.")
+        );
       })
       .finally(() => {
         setIsLoading(false);
@@ -47,7 +49,7 @@ const Login = () => {
   };
 
   return (
-    <div className="grid min-h-screen bg-light-background lg:grid-cols-2">
+    <div className="grid h-screen bg-light-background lg:grid-cols-2">
       {/* Form side */}
       <div className="flex items-center justify-center px-5 py-10 sm:px-10">
         <div className="w-full max-w-md">
@@ -137,7 +139,7 @@ const Login = () => {
               disabled={isLoading}
               loading={isLoading}
               text={isLoading ? "Logging in…" : "Login"}
-              className="py-3"
+              className="py-3 w-full"
             />
           </form>
 
@@ -160,7 +162,7 @@ const Login = () => {
       </div>
 
       {/* Visual side */}
-      <div className="relative hidden overflow-hidden bg-gradient-to-br from-brand-primary via-brand-primaryDark to-violet-600 px-10 py-16 lg:flex lg:flex-col lg:items-center lg:justify-center lg:gap-10">
+      <div className="relative hidden overflow-hidden bg-linear-to-br from-brand-primary via-brand-primaryDark to-violet-600 px-10 py-16 lg:flex lg:flex-col lg:items-center lg:justify-center lg:gap-10">
         <div
           className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-white/10"
           aria-hidden="true"
@@ -170,7 +172,7 @@ const Login = () => {
           aria-hidden="true"
         />
 
-        <p className="relative max-w-md text-center text-4xl font-bold leading-tight text-white xl:text-5xl">
+        <p className="relative max-w-md text-center text-4xl font-bold leading-tight text-white">
           Effortlessly manage your expenses.
         </p>
         <p className="relative max-w-md text-center text-lg leading-relaxed text-white/85">
@@ -180,7 +182,7 @@ const Login = () => {
         <img
           src={asset1}
           alt="Expense tracker preview"
-          className="relative w-[68%] max-w-md rounded-2xl shadow-2xl"
+          className="relative w-[50%] max-w-md rounded-2xl shadow-2xl"
         />
       </div>
     </div>

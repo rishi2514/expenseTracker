@@ -6,7 +6,7 @@ export const labelClasses =
   "mb-1.5 block text-[13px] font-medium text-light-textSecondary";
 
 export const inputClasses =
-  "w-full rounded-xl border border-light-border bg-white px-3.5 py-2.5 text-[15px] text-light-textPrimary placeholder:text-light-textMuted transition focus:border-brand-primary focus:outline-none focus:ring-4 focus:ring-brand-primary/10 disabled:cursor-not-allowed disabled:bg-light-surfaceSecondary";
+  "w-full rounded-xl border border-light-border bg-white px-3 py-2 text-[15px] text-light-textPrimary placeholder:text-light-textMuted transition focus:border-brand-primary focus:outline-none focus:ring-4 focus:ring-brand-primary/10 disabled:cursor-not-allowed disabled:bg-light-surfaceSecondary";
 
 export const selectClasses =
   inputClasses +
