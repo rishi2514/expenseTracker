@@ -15,7 +15,7 @@ const TOAST_STYLES = {
 
 const ToastViewport = ({ toasts, onDismiss }) => (
   <div
-    className="pointer-events-none fixed inset-x-4 bottom-4 z-[100] flex flex-col items-stretch gap-2 sm:inset-x-auto sm:right-6 sm:w-[380px]"
+    className="pointer-events-none fixed inset-x-4 bottom-4 z-100 flex flex-col items-stretch gap-2 sm:inset-x-auto sm:right-6 sm:w-95"
     aria-live="polite"
   >
     {toasts.map((toast) => {

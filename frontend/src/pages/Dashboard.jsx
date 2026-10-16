@@ -233,7 +233,7 @@ const Dashboard = () => {
             </p>
           </div>
           {loading ? (
-            <Skeleton className="h-[210px] w-full" />
+            <Skeleton className="h-52.5 w-full" />
           ) : (
             <BarChart data={stats.series} />
           )}
@@ -250,7 +250,7 @@ const Dashboard = () => {
             </p>
           </div>
           {loading ? (
-            <Skeleton className="h-[180px] w-full" />
+            <Skeleton className="h-45 w-full" />
           ) : (
             <DonutChart data={stats.categorySlice} />
           )}

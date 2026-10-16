@@ -13,7 +13,7 @@ const DonutChart = ({ data = [], size = 190 }) => {
 
   if (!total) {
     return (
-      <div className="flex h-[240px] flex-col items-center justify-center rounded-xl border border-dashed border-light-border/60 text-center p-6">
+      <div className="flex h-60 flex-col items-center justify-center rounded-xl border border-dashed border-light-border/60 text-center p-6">
         <div className="h-10 w-10 rounded-full border-2 border-dashed border-light-border/80 flex items-center justify-center text-light-textMuted text-xs mb-2">
           ₹
         </div>
@@ -97,7 +97,7 @@ const DonutChart = ({ data = [], size = 190 }) => {
                   className="h-1.5 w-1.5 rounded-full shrink-0"
                   style={{ backgroundColor: activeSegment.color }}
                 />
-                <span className="truncate max-w-[85px]">{activeSegment.label}</span>
+                <span className="truncate max-w-21.25">{activeSegment.label}</span>
               </span>
               <span className="text-xl font-bold tracking-tight text-light-textPrimary tabular-nums leading-none">
                 {formatCurrency(activeSegment.value, { compact: true })}
@@ -142,7 +142,7 @@ const DonutChart = ({ data = [], size = 190 }) => {
                 className="h-1.5 w-1.5 rounded-full shrink-0"
                 style={{ backgroundColor: segment.color }}
               />
-              <span className="truncate max-w-[90px]">{segment.label}</span>
+              <span className="truncate max-w-22.5">{segment.label}</span>
               <span className="text-[10px] text-light-textMuted tabular-nums">
                 {segment.percent}%
               </span>

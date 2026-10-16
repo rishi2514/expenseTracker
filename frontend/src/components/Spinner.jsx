@@ -24,7 +24,7 @@ export const PageLoader = () => (
 );
 
 export const InlineLoader = ({ label = "Loading…" }) => (
-  <div className="flex min-h-[240px] w-full items-center justify-center">
+  <div className="flex min-h-60 w-full items-center justify-center">
     <div className="flex flex-col items-center gap-3">
       <Spinner className="h-7 w-7 text-brand-primary" />
       <p className="text-sm text-light-textSecondary">{label}</p>

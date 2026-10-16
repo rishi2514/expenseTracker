@@ -57,18 +57,18 @@ const BarChart = ({ data = [] }) => {
         {/* Legend */}
         <div className="flex items-center gap-3 text-[11px] text-light-textSecondary font-medium ml-auto">
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-gradient-to-tr from-brand-primary to-brand-primaryLight shadow-xs" />
+            <span className="h-2 w-2 rounded-full bg-linear-to-tr from-brand-primary to-brand-primaryLight shadow-xs" />
             <span>Income</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-gradient-to-tr from-rose-500 to-rose-400 shadow-xs" />
+            <span className="h-2 w-2 rounded-full bg-linear-to-tr from-rose-500 to-rose-400 shadow-xs" />
             <span>Expense</span>
           </span>
         </div>
       </div>
 
       {/* Chart Canvas */}
-      <div className="relative h-[215px] w-full pt-4 pb-2 border-b border-light-border/60">
+      <div className="relative h-53.75 w-full pt-4 pb-2 border-b border-light-border/60">
         {/* Horizontal grid lines */}
         {gridRatios.map((ratio) => (
           <div
@@ -109,9 +109,9 @@ const BarChart = ({ data = [] }) => {
                   {/* Subtle column background track */}
                   <div className="flex h-full w-full items-end justify-center gap-1 sm:gap-1.5 z-10">
                     {/* Income Bar (Gradient + Soft Glow) */}
-                    <div className="relative flex h-full w-full max-w-[12px] sm:max-w-[16px] items-end">
+                    <div className="relative flex h-full w-full max-w-3 sm:max-w-4 items-end">
                       <div
-                        className="w-full rounded-t-md bg-gradient-to-t from-brand-primaryDark to-brand-primaryLight transition-all duration-500 ease-out group-hover:brightness-110"
+                        className="w-full rounded-t-md bg-linear-to-t from-brand-primaryDark to-brand-primaryLight transition-all duration-500 ease-out group-hover:brightness-110"
                         style={{
                           height: `${incomeHeight}%`,
                           minHeight: item.income > 0 ? "4px" : "0px",
@@ -121,9 +121,9 @@ const BarChart = ({ data = [] }) => {
                     </div>
 
                     {/* Expense Bar (Gradient + Soft Glow) */}
-                    <div className="relative flex h-full w-full max-w-[12px] sm:max-w-[16px] items-end">
+                    <div className="relative flex h-full w-full max-w-3 sm:max-w-4 items-end">
                       <div
-                        className="w-full rounded-t-md bg-gradient-to-t from-rose-600 to-rose-400 transition-all duration-500 ease-out group-hover:brightness-110"
+                        className="w-full rounded-t-md bg-linear-to-t from-rose-600 to-rose-400 transition-all duration-500 ease-out group-hover:brightness-110"
                         style={{
                           height: `${expenseHeight}%`,
                           minHeight: item.expense > 0 ? "4px" : "0px",

@@ -43,7 +43,7 @@ const Brand = () => {
   return (
     <Link to="/" className="flex items-center gap-2.5">
       {logoFailed ? (
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-primary to-brand-primaryLight text-lg font-bold text-white">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-brand-primary to-brand-primaryLight text-lg font-bold text-white">
           ₹
         </span>
       ) : (
@@ -137,7 +137,7 @@ const Home = () => (
 
         <div className="relative">
           <div
-            className="absolute inset-6 rounded-3xl bg-gradient-to-br from-brand-primary/25 to-brand-accent/25 blur-2xl"
+            className="absolute inset-6 rounded-3xl bg-linear-to-br from-brand-primary/25 to-brand-accent/25 blur-2xl"
             aria-hidden="true"
           />
           <img
@@ -182,7 +182,7 @@ const Home = () => (
 
     {/* CTA */}
     <section className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-primary via-brand-primaryDark to-violet-600 px-6 py-12 text-center sm:px-12">
+      <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-brand-primary via-brand-primaryDark to-violet-600 px-6 py-12 text-center sm:px-12">
         <div
           className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10"
           aria-hidden="true"

@@ -51,7 +51,7 @@ const SidebarContent = ({ expanded, onLogout }) => {
     <div className="flex h-full flex-col overflow-hidden">
 
       {/* ── Logo ── */}
-      <div className="flex h-[60px] shrink-0 items-center gap-3 px-4">
+      <div className="flex h-15 shrink-0 items-center gap-3 px-4">
         <Link to="/dashboard" className="flex items-center gap-3 min-w-0">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-brand-primary">
             {logoFailed ? (
@@ -142,7 +142,6 @@ const SidebarContent = ({ expanded, onLogout }) => {
         >
           <span
             className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[11px] font-bold text-white overflow-hidden"
-            style={{ backgroundColor: color }}
           >
             {avatar
               ? <img src={avatar} alt="" className="h-full w-full object-cover" />
@@ -194,7 +193,7 @@ const AppLayout = ({ children }) => {
           onClick={() => setExpanded((prev) => !prev)}
           aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
           title={expanded ? "Collapse sidebar" : "Expand sidebar"}
-          className="absolute -right-3 top-[60px] -translate-y-1/2 z-50 flex h-6 w-6 items-center justify-center rounded-full border border-light-border bg-light-surface text-light-textMuted shadow-xs transition-all hover:text-brand-primary hover:border-brand-primary/40 hover:scale-110 cursor-pointer"
+          className="absolute -right-3 top-15 -translate-y-1/2 z-50 flex h-6 w-6 items-center justify-center rounded-full border border-light-border bg-light-surface text-light-textMuted shadow-xs transition-all hover:text-brand-primary hover:border-brand-primary/40 hover:scale-110 cursor-pointer"
         >
           <IoChevronBackOutline
             className={`text-xs transition-transform duration-200 ${
@@ -211,12 +210,12 @@ const AppLayout = ({ children }) => {
 
       {/* ── Main ── */}
       <div
-        className={`flex min-h-screen flex-1 flex-col ${expanded ? "lg:pl-56" : "lg:pl-[56px]"}`}
+        className={`flex min-h-screen flex-1 flex-col ${expanded ? "lg:pl-56" : "lg:pl-14"}`}
         style={{ transition: "padding-left 0.2s cubic-bezier(0.4,0,0.2,1)" }}
       >
         {/* Content */}
         <main className="flex-1 px-6 py-8 lg:px-8">
-          <div className="mx-auto max-w-[1380px]">
+          <div className="mx-auto max-w-345">
             {children}
           </div>
         </main>

@@ -274,7 +274,7 @@ const TransactionFormContent = ({
             placeholder="What was this transaction for?"
             value={form.message}
             onChange={updateField("message")}
-            className={`${textareaClasses} text-xs min-h-[64px]`}
+            className={`${textareaClasses} text-xs min-h-16`}
           />
         </Field>
       </form>

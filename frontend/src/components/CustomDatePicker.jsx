@@ -159,7 +159,7 @@ const CustomDatePicker = ({
 
       {/* Popover Calendar */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-1.5 z-50 w-[270px] rounded-xl border border-light-border bg-light-surface p-3 shadow-xl animate-slide-up">
+        <div className="absolute right-0 top-full mt-1.5 z-50 w-67.5 rounded-xl border border-light-border bg-light-surface p-3 shadow-xl animate-slide-up">
           {/* Calendar Header with Month/Year Navigation */}
           <div className="flex items-center justify-between pb-2 border-b border-light-border/60">
             <button
