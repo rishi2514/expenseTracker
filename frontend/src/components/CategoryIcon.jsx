@@ -15,24 +15,27 @@ import {
   IoWalletOutline,
 } from "react-icons/io5";
 
-// Maps a category name to a matching icon + tinted background.
+// Maps a category name to a matching icon + color.
+// We use an inline style for the bg (with opacity) so it adapts to the theme
+// without needing hardcoded "bg-orange-100" Tailwind classes (which stay light
+// even in dark mode).
 const CATEGORY_STYLES = [
-  { pattern: /food|restaurant|dining|cafe|coffee|lunch|dinner|breakfast|swiggy|zomato/i, Icon: IoRestaurantOutline, tone: "bg-orange-100 text-orange-600" },
-  { pattern: /travel|taxi|cab|fuel|petrol|gas|flight|bus|metro|train|uber|ola/i, Icon: IoCarSportOutline, tone: "bg-sky-100 text-sky-600" },
-  { pattern: /trip|vacation|hotel/i, Icon: IoAirplaneOutline, tone: "bg-indigo-100 text-indigo-600" },
-  { pattern: /shop|cloth|mall|amazon|flipkart|shoes|apparel/i, Icon: IoBagHandleOutline, tone: "bg-pink-100 text-pink-600" },
-  { pattern: /rent|home|house|emi|mortgage|property/i, Icon: IoHomeOutline, tone: "bg-violet-100 text-violet-600" },
-  { pattern: /salary|income|business|freelance|invest|dividend|interest/i, Icon: IoTrendingUpOutline, tone: "bg-emerald-100 text-emerald-600" },
-  { pattern: /grocer|vegetable|fruit|market|milk|kirana/i, Icon: IoCartOutline, tone: "bg-teal-100 text-teal-600" },
-  { pattern: /movie|netflix|music|game|entertain|subscription|spotify/i, Icon: IoGameControllerOutline, tone: "bg-fuchsia-100 text-fuchsia-600" },
-  { pattern: /medical|health|doctor|pharmacy|medicine|hospital|gym/i, Icon: IoMedkitOutline, tone: "bg-rose-100 text-rose-600" },
-  { pattern: /education|course|book|school|college|fee|tuition/i, Icon: IoBookOutline, tone: "bg-blue-100 text-blue-600" },
-  { pattern: /utility|electric|bill|internet|wifi|mobile|recharge|water|gas/i, Icon: IoFlashOutline, tone: "bg-amber-100 text-amber-600" },
-  { pattern: /gift|donation|charity|fest/i, Icon: IoGiftOutline, tone: "bg-rose-100 text-rose-600" },
-  { pattern: /bank|transfer|saving|wallet|atm/i, Icon: IoWalletOutline, tone: "bg-indigo-100 text-indigo-600" },
+  { pattern: /food|restaurant|dining|cafe|coffee|lunch|dinner|breakfast|swiggy|zomato/i, Icon: IoRestaurantOutline, color: "#f97316" },
+  { pattern: /travel|taxi|cab|fuel|petrol|gas|flight|bus|metro|train|uber|ola/i,         Icon: IoCarSportOutline,    color: "#0ea5e9" },
+  { pattern: /trip|vacation|hotel/i,                                                     Icon: IoAirplaneOutline,    color: "#6366f1" },
+  { pattern: /shop|cloth|mall|amazon|flipkart|shoes|apparel/i,                           Icon: IoBagHandleOutline,   color: "#ec4899" },
+  { pattern: /rent|home|house|emi|mortgage|property/i,                                   Icon: IoHomeOutline,        color: "#8b5cf6" },
+  { pattern: /salary|income|business|freelance|invest|dividend|interest/i,               Icon: IoTrendingUpOutline,  color: "#10b981" },
+  { pattern: /grocer|vegetable|fruit|market|milk|kirana/i,                               Icon: IoCartOutline,        color: "#14b8a6" },
+  { pattern: /movie|netflix|music|game|entertain|subscription|spotify/i,                 Icon: IoGameControllerOutline, color: "#d946ef" },
+  { pattern: /medical|health|doctor|pharmacy|medicine|hospital|gym/i,                   Icon: IoMedkitOutline,      color: "#ef4444" },
+  { pattern: /education|course|book|school|college|fee|tuition/i,                       Icon: IoBookOutline,        color: "#3b82f6" },
+  { pattern: /utility|electric|bill|internet|wifi|mobile|recharge|water|gas/i,          Icon: IoFlashOutline,       color: "#f59e0b" },
+  { pattern: /gift|donation|charity|fest/i,                                              Icon: IoGiftOutline,        color: "#f43f5e" },
+  { pattern: /bank|transfer|saving|wallet|atm/i,                                        Icon: IoWalletOutline,      color: "#4f46e5" },
 ];
 
-const FALLBACK = { Icon: IoPricetagOutline, tone: "bg-brand-primary/10 text-brand-primary" };
+const FALLBACK = { Icon: IoPricetagOutline, color: "#6366f1" };
 
 const resolveStyle = (name = "") =>
   CATEGORY_STYLES.find(({ pattern }) => pattern.test(name)) || FALLBACK;
@@ -44,10 +47,11 @@ const SIZES = {
 };
 
 const CategoryIcon = ({ name = "", size = "md", className = "" }) => {
-  const { Icon, tone } = resolveStyle(name);
+  const { Icon, color } = resolveStyle(name);
   return (
     <div
-      className={`flex shrink-0 items-center justify-center ${SIZES[size] || SIZES.md} ${tone} ${className}`}
+      className={`flex shrink-0 items-center justify-center ${SIZES[size] || SIZES.md} ${className}`}
+      style={{ backgroundColor: `${color}1a`, color }}
       aria-hidden="true"
     >
       <Icon />

@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  IoAddOutline,
-  IoArrowDownCircleOutline,
-  IoArrowUpCircleOutline,
+  IoAdd,
+  IoArrowDownOutline,
+  IoArrowUpOutline,
   IoListOutline,
   IoRefreshOutline,
   IoTrendingUpOutline,
@@ -134,7 +134,7 @@ const Dashboard = () => {
 
   const list = useMemo(() => transactions.data || [], [transactions.data]);
   const stats = useMemo(() => computeDashboardData(list), [list]);
-  const recent = list.slice(0, 6);
+  const recent = list.slice(0, 8);
   const loading = transactions.loading;
 
   const openAdd = () => {
@@ -147,31 +147,36 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="space-y-5">
-      {/* Greeting + primary action */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div className="space-y-6">
+      {/* Top Banner / Welcome row */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-1">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-light-textPrimary">
-            {getGreeting()}, {user?.name || user?.userName || "there"} 👋
+          <h2 className="text-xl font-bold tracking-tight text-light-textPrimary sm:text-2xl">
+            {getGreeting()}, {user?.name ? user.name.split(" ")[0] : (user?.userName || "there")}
           </h2>
-          <p className="mt-1 text-sm text-light-textSecondary">
-            {formatLongDate()}
+          <p className="mt-0.5 text-xs text-light-textMuted font-medium">
+            {formatLongDate()} · Financial overview
           </p>
         </div>
-        <button type="button" onClick={openAdd} className={buttonPrimary}>
-          <IoAddOutline className="text-lg" aria-hidden="true" />
-          Add transaction
+
+        <button
+          type="button"
+          onClick={openAdd}
+          className={`${buttonPrimary} shadow-sm shadow-brand-primary/20`}
+        >
+          <IoAdd className="text-lg" aria-hidden="true" />
+          <span>New transaction</span>
         </button>
       </div>
 
-      {/* Error banner */}
+      {/* Error notification */}
       {transactions.error && (
-        <div className="flex items-center justify-between gap-3 rounded-xl border border-semantic-danger/30 bg-semantic-danger/5 px-4 py-3 text-sm text-semantic-danger">
-          <span>Could not load your transactions: {transactions.error}</span>
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-semantic-danger/30 bg-semantic-danger/10 px-4 py-3 text-xs text-semantic-danger">
+          <span>Failed to load transaction data: {transactions.error}</span>
           <button
             type="button"
             onClick={transactions.refetch}
-            className="inline-flex items-center gap-1.5 font-semibold hover:underline"
+            className="inline-flex items-center gap-1 font-semibold hover:underline"
           >
             <IoRefreshOutline aria-hidden="true" />
             Retry
@@ -179,102 +184,107 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* KPI cards */}
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Overview">
+      {/* KPI Cards Grid */}
+      <section className="grid gap-3.5 sm:grid-cols-2 xl:grid-cols-4" aria-label="Key Performance Indicators">
         <StatCard
-          label="Total balance"
+          label="Total Balance"
           value={formatCurrency(stats.balance)}
           icon={<IoWalletOutline />}
           tone="indigo"
-          hint="All time income − expenses"
+          hint="Net cumulative standing"
           loading={loading}
         />
         <StatCard
-          label="Income this month"
+          label="Income (This Month)"
           value={formatCurrency(stats.monthCredit)}
-          icon={<IoArrowDownCircleOutline />}
+          icon={<IoArrowDownOutline />}
           tone="emerald"
-          hint="Received this month"
+          hint="Deposits & revenue"
           loading={loading}
         />
         <StatCard
-          label="Expenses this month"
+          label="Expenses (This Month)"
           value={formatCurrency(stats.monthDebit)}
-          icon={<IoArrowUpCircleOutline />}
+          icon={<IoArrowUpOutline />}
           tone="rose"
-          hint="Money out this month"
+          hint="Total monthly outflow"
           loading={loading}
         />
         <StatCard
-          label="Net this month"
+          label="Net Savings"
           value={formatCurrency(stats.monthNet)}
           icon={<IoTrendingUpOutline />}
           tone="amber"
-          hint="Income − expenses"
+          hint="Income minus expenses"
           loading={loading}
         />
       </section>
 
-      {/* Charts */}
-      <section className="grid gap-5 lg:grid-cols-3" aria-label="Insights">
+      {/* Analytics & Charts */}
+      <section className="grid gap-4 lg:grid-cols-3" aria-label="Analytics Insights">
+        {/* Cash Flow Bar Chart */}
         <div className={`${cardClasses} p-5 lg:col-span-2`}>
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <div>
-              <h3 className="text-[15px] font-semibold text-light-textPrimary">
-                Cash flow
-              </h3>
-              <p className="text-xs text-light-textMuted">
-                Income vs expenses, last {CHART_MONTH_COUNT} months
-              </p>
-            </div>
+          <div className="mb-4">
+            <h3 className="text-[14px] font-semibold text-light-textPrimary tracking-tight">
+              Cash Flow Trend
+            </h3>
+            <p className="text-[11px] text-light-textMuted">
+              Income vs expenses across the past 12 months (1 year)
+            </p>
           </div>
           {loading ? (
-            <Skeleton className="h-[236px] w-full" />
+            <Skeleton className="h-[210px] w-full" />
           ) : (
             <BarChart data={stats.series} />
           )}
         </div>
 
+        {/* Category Breakdown Donut Chart */}
         <div className={`${cardClasses} p-5`}>
           <div className="mb-4">
-            <h3 className="text-[15px] font-semibold text-light-textPrimary">
-              Spending by category
+            <h3 className="text-[14px] font-semibold text-light-textPrimary tracking-tight">
+              Top Expenses
             </h3>
-            <p className="text-xs text-light-textMuted">
-              Where your money goes
+            <p className="text-[11px] text-light-textMuted">
+              Spending distribution by category
             </p>
           </div>
           {loading ? (
-            <Skeleton className="h-[176px] w-full" />
+            <Skeleton className="h-[180px] w-full" />
           ) : (
             <DonutChart data={stats.categorySlice} />
           )}
         </div>
       </section>
 
-      {/* Recent transactions */}
-      <section className={`${cardClasses} overflow-hidden`} aria-label="Recent transactions">
-        <div className="flex items-center justify-between gap-3 border-b border-light-border px-5 py-4">
-          <h3 className="text-[15px] font-semibold text-light-textPrimary">
-            Recent transactions
-          </h3>
+      {/* Recent Transactions Table */}
+      <section className={`${cardClasses} overflow-hidden`} aria-label="Recent Transactions">
+        <div className="flex items-center justify-between border-b border-light-border px-5 py-3.5">
+          <div>
+            <h3 className="text-[14px] font-semibold text-light-textPrimary tracking-tight">
+              Recent Transactions
+            </h3>
+            <p className="text-[11px] text-light-textMuted">
+              Latest activity across your accounts
+            </p>
+          </div>
           <Link
             to="/transactions"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-brand-primary hover:underline"
+            className="text-[12px] font-semibold text-brand-primary hover:underline flex items-center gap-1"
           >
-            View all
+            <span>View all</span>
             <span aria-hidden="true">→</span>
           </Link>
         </div>
 
         {loading ? (
-          <div className="divide-y divide-light-border">
+          <div className="divide-y divide-light-border/60">
             {Array.from({ length: 4 }).map((_, index) => (
               <div key={index} className="flex items-center gap-3 px-5 py-3.5">
-                <Skeleton className="h-10 w-10 rounded-xl" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-3.5 w-40" />
-                  <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-9 w-9 rounded-xl" />
+                <div className="flex-1 space-y-1.5">
+                  <Skeleton className="h-3.5 w-36" />
+                  <Skeleton className="h-2.5 w-24" />
                 </div>
                 <Skeleton className="h-4 w-20" />
               </div>
@@ -282,42 +292,47 @@ const Dashboard = () => {
           </div>
         ) : recent.length === 0 ? (
           <EmptyState
-            icon={<IoListOutline className="text-2xl" />}
-            title="No transactions yet"
-            description="Add your first income or expense and your dashboard will come to life."
+            icon={<IoListOutline className="text-xl" />}
+            title="No transactions recorded"
+            description="Add your first transaction to initiate real-time analytics and reporting."
             action={
               <button type="button" onClick={openAdd} className={buttonPrimary}>
-                <IoAddOutline className="text-lg" aria-hidden="true" />
+                <IoAdd className="text-base" aria-hidden="true" />
                 Add transaction
               </button>
             }
           />
         ) : (
-          <div className="divide-y divide-light-border">
+          <div className="divide-y divide-light-border/60">
             {recent.map((transaction) => (
               <TransactionRow
                 key={transaction._id}
                 transaction={transaction}
-                onEdit={openEdit}
+                showActions={false}
               />
             ))}
           </div>
         )}
       </section>
 
-      {/* Quick links when the account is still empty */}
+      {/* Getting Started Tip for new users */}
       {!loading && list.length === 0 && categories.data?.length === 0 && (
-        <div className={`${cardClasses} flex flex-col items-center gap-3 p-5 sm:flex-row`}>
-          <p className="flex-1 text-sm text-light-textSecondary">
-            Tip: create a few categories (Food, Rent, Salary…) before adding
-            transactions — it keeps your reports tidy.
-          </p>
-          <Link to="/categories" className={`${buttonSecondary} shrink-0`}>
+        <div className={`${cardClasses} flex flex-col items-center justify-between gap-4 p-5 sm:flex-row bg-light-surfaceSecondary/40`}>
+          <div>
+            <p className="text-xs font-medium text-light-textPrimary">
+              Set up your categories first
+            </p>
+            <p className="text-[11px] text-light-textSecondary mt-0.5">
+              Organising spending into categories (like Groceries, Dining, Rent) enables accurate reports and charts.
+            </p>
+          </div>
+          <Link to="/categories" className={`${buttonSecondary} text-xs py-2 shrink-0`}>
             Manage categories
           </Link>
         </div>
       )}
 
+      {/* Transaction Modal */}
       <TransactionFormModal
         open={formOpen}
         onClose={() => setFormOpen(false)}

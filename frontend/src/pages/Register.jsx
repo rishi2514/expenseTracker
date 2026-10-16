@@ -129,7 +129,7 @@ const Register = () => {
 
       {/* Form side */}
       <div className="flex w-[50%] items-center justify-center overflow-y-auto">
-        <div className="w-full h-screen max-w-md px-5 sm:px-10 pt-10">
+        <div className="w-full h-screen max-w-md px-5 pt-10">
           <Link
             to="/"
             className="mb-5 inline-block text-sm font-semibold text-light-textSecondary transition hover:text-brand-primary cursor-pointer"

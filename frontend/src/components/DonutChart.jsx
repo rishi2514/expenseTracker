@@ -1,25 +1,31 @@
+import { useState } from "react";
 import { formatCurrency } from "../utils/format";
 import { CHART_COLORS } from "../utils/palette";
 
-// SVG donut chart: data = [{ label, value }]
-const DonutChart = ({ data = [], height = 176 }) => {
+// Premium, interactive fintech donut chart without cluttered progress bars
+const DonutChart = ({ data = [], size = 190 }) => {
+  const [hoveredKey, setHoveredKey] = useState(null);
+
   const total = data.reduce((sum, item) => sum + (item.value || 0), 0);
-  const size = height;
-  const stroke = 22;
+  const stroke = 18;
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
 
   if (!total) {
     return (
-      <div className="flex h-[176px] items-center justify-center rounded-xl border border-dashed border-light-border text-sm text-light-textMuted">
-        No expenses to show yet
+      <div className="flex h-[240px] flex-col items-center justify-center rounded-xl border border-dashed border-light-border/60 text-center p-6">
+        <div className="h-10 w-10 rounded-full border-2 border-dashed border-light-border/80 flex items-center justify-center text-light-textMuted text-xs mb-2">
+          ₹
+        </div>
+        <p className="text-xs font-medium text-light-textMuted">No expense records found</p>
+        <p className="text-[11px] text-light-textMuted/70 mt-0.5">Expenses you log will show here</p>
       </div>
     );
   }
 
   const segments = data.map((item, index) => {
     const fraction = item.value / total;
-    const length = Math.max(fraction * circumference - 3, 0); // 3px gap between slices
+    const length = Math.max(fraction * circumference - 3, 0); // 3px subtle elegant gap
     const start = data
       .slice(0, index)
       .reduce((sum, entry) => sum + entry.value / total, 0);
@@ -28,71 +34,122 @@ const DonutChart = ({ data = [], height = 176 }) => {
       color: item.color || CHART_COLORS[index % CHART_COLORS.length],
       dash: `${length} ${circumference - length}`,
       offset: -start * circumference,
-      percent: fraction,
+      percent: Math.round(fraction * 100),
       ...item,
     };
   });
 
+  const activeSegment = segments.find((s) => s.key === hoveredKey) || null;
+
   return (
-    <div className="flex flex-col items-center gap-4 sm:flex-row">
-      <div className="relative shrink-0" style={{ width: size, height: size }}>
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label="Expense split by category">
+    <div className="flex flex-col items-center justify-center pt-1 pb-2">
+      {/* Centered Donut Ring */}
+      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+        <svg
+          width={size}
+          height={size}
+          viewBox={`0 0 ${size} ${size}`}
+          className="transform -rotate-90 overflow-visible"
+        >
+          {/* Subtle Outer Ambient Ring */}
           <circle
             cx={size / 2}
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="#EEF1F7"
+            className="donut-track opacity-40"
             strokeWidth={stroke}
           />
-          {segments.map((segment) => (
-            <circle
-              key={segment.key}
-              cx={size / 2}
-              cy={size / 2}
-              r={radius}
-              fill="none"
-              stroke={segment.color}
-              strokeWidth={stroke}
-              strokeDasharray={segment.dash}
-              strokeDashoffset={segment.offset}
-              strokeLinecap="butt"
-              transform={`rotate(-90 ${size / 2} ${size / 2})`}
-            >
-              <title>{`${segment.label}: ${formatCurrency(segment.value)}`}</title>
-            </circle>
-          ))}
+
+          {/* Interactive Segments */}
+          {segments.map((segment) => {
+            const isHovered = hoveredKey === segment.key;
+            return (
+              <circle
+                key={segment.key}
+                cx={size / 2}
+                cy={size / 2}
+                r={radius}
+                fill="none"
+                stroke={segment.color}
+                strokeWidth={isHovered ? stroke + 4 : stroke}
+                strokeDasharray={segment.dash}
+                strokeDashoffset={segment.offset}
+                strokeLinecap="round"
+                className="transition-all duration-200 cursor-pointer origin-center"
+                style={{
+                  filter: isHovered ? `drop-shadow(0 0 6px ${segment.color}88)` : "none",
+                  opacity: hoveredKey && !isHovered ? 0.45 : 1,
+                }}
+                onMouseEnter={() => setHoveredKey(segment.key)}
+                onMouseLeave={() => setHoveredKey(null)}
+              />
+            );
+          })}
         </svg>
-        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-          <span className="text-[11px] uppercase tracking-wide text-light-textMuted">
-            Total
-          </span>
-          <span className="text-lg font-bold text-light-textPrimary tabular-nums">
-            {formatCurrency(total, { compact: true })}
-          </span>
+
+        {/* Center Dynamic Label */}
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center px-3">
+          {activeSegment ? (
+            <div className="animate-fade-in flex flex-col items-center">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-light-textMuted flex items-center gap-1.5 mb-0.5">
+                <span
+                  className="h-1.5 w-1.5 rounded-full shrink-0"
+                  style={{ backgroundColor: activeSegment.color }}
+                />
+                <span className="truncate max-w-[85px]">{activeSegment.label}</span>
+              </span>
+              <span className="text-xl font-bold tracking-tight text-light-textPrimary tabular-nums leading-none">
+                {formatCurrency(activeSegment.value, { compact: true })}
+              </span>
+              <span className="mt-1 text-[10px] font-semibold text-brand-primary rounded-full bg-brand-primary/10 px-2 py-0.5">
+                {activeSegment.percent}% of total
+              </span>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] font-medium uppercase tracking-widest text-light-textMuted mb-0.5">
+                Total Outflow
+              </span>
+              <span className="text-xl font-bold tracking-tight text-light-textPrimary tabular-nums leading-none">
+                {formatCurrency(total, { compact: true })}
+              </span>
+              <span className="mt-1 text-[10px] text-light-textMuted font-medium">
+                {segments.length} {segments.length === 1 ? "category" : "categories"}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
-      <ul className="w-full min-w-0 flex-1 space-y-2">
-        {segments.map((segment) => (
-          <li key={segment.key} className="flex items-center gap-2.5">
-            <span
-              className="h-2.5 w-2.5 shrink-0 rounded-full"
-              style={{ backgroundColor: segment.color }}
-              aria-hidden="true"
-            />
-            <span className="min-w-0 flex-1 truncate text-sm text-light-textSecondary">
-              {segment.label}
-            </span>
-            <span className="text-sm font-semibold text-light-textPrimary tabular-nums">
-              {formatCurrency(segment.value, { compact: true })}
-            </span>
-            <span className="w-10 text-right text-xs text-light-textMuted tabular-nums">
-              {Math.round(segment.percent * 100)}%
-            </span>
-          </li>
-        ))}
-      </ul>
+      {/* Minimal Interactive Legend Pills (No Progress Bars) */}
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-1.5 px-2 max-w-[320px]">
+        {segments.map((segment) => {
+          const isHovered = hoveredKey === segment.key;
+          return (
+            <button
+              key={segment.key}
+              type="button"
+              onMouseEnter={() => setHoveredKey(segment.key)}
+              onMouseLeave={() => setHoveredKey(null)}
+              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all ${
+                isHovered
+                  ? "bg-light-surfaceSecondary ring-1 ring-brand-primary/40 text-light-textPrimary scale-105"
+                  : "bg-light-surfaceSecondary/50 text-light-textSecondary hover:bg-light-surfaceSecondary hover:text-light-textPrimary"
+              }`}
+            >
+              <span
+                className="h-1.5 w-1.5 rounded-full shrink-0"
+                style={{ backgroundColor: segment.color }}
+              />
+              <span className="truncate max-w-[90px]">{segment.label}</span>
+              <span className="text-[10px] text-light-textMuted tabular-nums">
+                {segment.percent}%
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 };

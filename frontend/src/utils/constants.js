@@ -22,4 +22,4 @@ export const CATEGORIES_FETCH_LIMIT = 100;
 export const TRANSACTION_PAGE_SIZE = 10;
 export const CATEGORY_PAGE_SIZE = 12;
 
-export const CHART_MONTH_COUNT = 6;
+export const CHART_MONTH_COUNT = 12;

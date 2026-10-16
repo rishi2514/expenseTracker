@@ -1,7 +1,5 @@
-import { IoChevronBack, IoChevronForward } from "react-icons/io5";
-import { iconButtonClasses } from "../utils/styles";
+import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
 
-// Builds a compact page list: 1 … 4 5 6 … 20
 const buildPageItems = (page, totalPages) => {
   if (totalPages <= 7) {
     return Array.from({ length: totalPages }, (_, index) => index + 1);
@@ -32,30 +30,30 @@ const Pagination = ({ page, totalPages, totalDocs, limit = 10, onPageChange }) =
   };
 
   return (
-    <div className="flex flex-col items-center justify-between gap-3 border-t border-light-border px-4 py-3.5 sm:flex-row">
-      <p className="text-sm text-light-textSecondary">
-        Showing <span className="font-medium text-light-textPrimary">{from}</span>–
-        <span className="font-medium text-light-textPrimary">{to}</span> of{" "}
-        <span className="font-medium text-light-textPrimary">{totalDocs ?? to}</span>
+    <div className="flex flex-col items-center justify-between gap-3 border-t border-light-border px-5 py-3 sm:flex-row text-xs">
+      <p className="text-light-textMuted font-medium">
+        Showing <span className="text-light-textPrimary font-semibold">{from}</span>–
+        <span className="text-light-textPrimary font-semibold">{to}</span> of{" "}
+        <span className="text-light-textPrimary font-semibold">{totalDocs ?? to}</span>
       </p>
 
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1">
         <button
           type="button"
           onClick={() => goTo(current - 1)}
           disabled={current === 1}
           aria-label="Previous page"
-          className={iconButtonClasses}
+          className="flex h-7 w-7 items-center justify-center rounded-lg text-light-textMuted transition hover:bg-light-surfaceSecondary hover:text-light-textPrimary disabled:opacity-30 disabled:pointer-events-none"
         >
-          <IoChevronBack aria-hidden="true" />
+          <IoChevronBackOutline className="text-xs" aria-hidden="true" />
         </button>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           {buildPageItems(current, totalPages).map((item, index) =>
             item === "…" ? (
               <span
                 key={`gap-${index}`}
-                className="px-1.5 text-sm text-light-textMuted"
+                className="px-1 text-xs text-light-textMuted"
               >
                 …
               </span>
@@ -67,8 +65,8 @@ const Pagination = ({ page, totalPages, totalDocs, limit = 10, onPageChange }) =
                 aria-current={item === current ? "page" : undefined}
                 className={
                   item === current
-                    ? "inline-flex h-9 min-w-9 items-center justify-center rounded-lg bg-brand-primary px-2.5 text-sm font-semibold text-white"
-                    : "inline-flex h-9 min-w-9 items-center justify-center rounded-lg px-2.5 text-sm font-medium text-light-textSecondary transition hover:bg-light-surfaceSecondary hover:text-light-textPrimary"
+                    ? "flex h-7 min-w-7 items-center justify-center rounded-lg bg-brand-primary px-2 text-xs font-semibold text-white shadow-xs"
+                    : "flex h-7 min-w-7 items-center justify-center rounded-lg px-2 text-xs font-medium text-light-textSecondary transition hover:bg-light-surfaceSecondary hover:text-light-textPrimary"
                 }
               >
                 {item}
@@ -82,9 +80,9 @@ const Pagination = ({ page, totalPages, totalDocs, limit = 10, onPageChange }) =
           onClick={() => goTo(current + 1)}
           disabled={current === totalPages}
           aria-label="Next page"
-          className={iconButtonClasses}
+          className="flex h-7 w-7 items-center justify-center rounded-lg text-light-textMuted transition hover:bg-light-surfaceSecondary hover:text-light-textPrimary disabled:opacity-30 disabled:pointer-events-none"
         >
-          <IoChevronForward aria-hidden="true" />
+          <IoChevronForwardOutline className="text-xs" aria-hidden="true" />
         </button>
       </div>
     </div>

@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Modal from "./Modal";
 import Field from "./Field";
-import Select from "./Select";
+import CustomCategorySelect from "./CustomCategorySelect";
+import CustomDatePicker from "./CustomDatePicker";
 import { Spinner } from "./Spinner";
 import useToast from "../hooks/useToast";
 import { createTransaction, updateTransaction } from "../api/transactions";
@@ -20,9 +21,6 @@ const buildState = (transaction) => ({
   message: transaction?.message || "",
 });
 
-// Create / edit form used from the dashboard and the transactions page.
-// The inner form only mounts while the modal is open, so its state resets
-// for every add/edit session without needing an effect.
 const TransactionFormModal = ({ open, ...props }) => {
   if (!open) return null;
   return <TransactionFormContent {...props} />;
@@ -52,10 +50,10 @@ const TransactionFormContent = ({
     const nextErrors = {};
     const amount = Number(form.amount);
     if (!form.amount || !Number.isFinite(amount) || amount <= 0) {
-      nextErrors.amount = "Enter an amount greater than 0";
+      nextErrors.amount = "Please enter an amount greater than 0";
     }
     if (!form.categoryId) {
-      nextErrors.categoryId = "Pick a category";
+      nextErrors.categoryId = "Please select a category";
     }
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
@@ -82,13 +80,13 @@ const TransactionFormContent = ({
           ...payload,
           category: form.categoryId,
         });
-        toast.success("Transaction updated");
+        toast.success("Transaction updated successfully");
       } else {
         await createTransaction({ ...payload, categoryId: form.categoryId });
         toast.success(
           form.transactionType === "credit"
-            ? "Income added"
-            : "Expense added"
+            ? "Income logged successfully"
+            : "Expense recorded successfully"
         );
       }
       onSuccess?.();
@@ -100,23 +98,21 @@ const TransactionFormContent = ({
     }
   };
 
-  const categoryOptions = categories.map((category) => ({
-    value: category._id,
-    label: category.name,
-  }));
+  const isCredit = form.transactionType === "credit";
 
   return (
     <Modal
       open
       onClose={submitting ? undefined : onClose}
-      title={isEditing ? "Edit transaction" : "Add transaction"}
+      title={isEditing ? "Edit Transaction" : "New Transaction"}
       description={
         isEditing
-          ? "Update the details of this entry."
-          : "Record a new income or expense in a few seconds."
+          ? "Update details of this entry"
+          : "Add an expense or income record to your balance"
       }
+      size="md"
       footer={
-        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <div className="flex items-center justify-end gap-2.5">
           <button
             type="button"
             onClick={onClose}
@@ -132,115 +128,119 @@ const TransactionFormContent = ({
             className={buttonPrimary}
           >
             {submitting && <Spinner className="h-4 w-4" />}
-            {submitting
-              ? "Saving…"
-              : isEditing
-                ? "Save changes"
-                : "Add transaction"}
+            <span>
+              {submitting
+                ? "Saving…"
+                : isEditing
+                  ? "Update transaction"
+                  : "Save transaction"}
+            </span>
           </button>
         </div>
       }
     >
       <form id="transaction-form" onSubmit={handleSubmit} className="space-y-4">
-        {/* Type toggle */}
-        <fieldset>
-          <legend className="mb-1.5 block text-[13px] font-medium text-light-textSecondary">
-            Type
-          </legend>
-          <div className="grid grid-cols-2 gap-2 rounded-xl bg-light-surfaceSecondary p-1">
-            {TRANSACTION_TYPES.map(({ value, label }) => {
-              const active = form.transactionType === value;
-              return (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() =>
-                    setForm((prev) => ({ ...prev, transactionType: value }))
-                  }
-                  aria-pressed={active}
-                  className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
-                    active
-                      ? value === "credit"
-                        ? "bg-white text-semantic-success shadow-sm"
-                        : "bg-white text-semantic-danger shadow-sm"
-                      : "text-light-textSecondary hover:text-light-textPrimary"
-                  }`}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-        </fieldset>
+        {/* Type Segmented Switcher */}
+        <div className="grid grid-cols-2 gap-1 rounded-xl bg-light-surfaceSecondary p-1">
+          {TRANSACTION_TYPES.map(({ value, label }) => {
+            const active = form.transactionType === value;
+            return (
+              <button
+                key={value}
+                type="button"
+                onClick={() =>
+                  setForm((prev) => ({ ...prev, transactionType: value }))
+                }
+                className={`flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition-all ${
+                  active
+                    ? value === "credit"
+                      ? "bg-light-surface text-semantic-success shadow-xs font-bold"
+                      : "bg-light-surface text-semantic-danger shadow-xs font-bold"
+                    : "text-light-textMuted hover:text-light-textPrimary"
+                }`}
+              >
+                <span>{value === "credit" ? "+" : "−"}</span>
+                <span>{label}</span>
+              </button>
+            );
+          })}
+        </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Amount" htmlFor="tx-amount" required error={errors.amount}>
-            <div className="relative">
-              <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-light-textMuted">
-                ₹
-              </span>
-              <input
-                id="tx-amount"
-                type="number"
-                min="0"
-                step="any"
-                inputMode="decimal"
-                placeholder="0"
-                value={form.amount}
-                onChange={updateField("amount")}
-                className={`${inputClasses} pl-8 font-semibold tabular-nums`}
+        {/* Hero Amount Input */}
+        <div>
+          <label className="block text-[11px] font-medium text-light-textMuted uppercase mb-1">
+            Amount
+          </label>
+          <div className="relative">
+            <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-lg font-semibold text-light-textMuted">
+              ₹
+            </span>
+            <input
+              id="tx-amount"
+              type="number"
+              min="0"
+              step="any"
+              inputMode="decimal"
+              placeholder="0.00"
+              value={form.amount}
+              onChange={updateField("amount")}
+              autoFocus={!isEditing}
+              className={`${inputClasses} pl-8 text-xl font-bold tabular-nums tracking-tight py-2.5`}
+            />
+          </div>
+          {errors.amount && (
+            <p className="mt-1 text-xs text-semantic-danger">{errors.amount}</p>
+          )}
+        </div>
+
+        {/* Category & Date Grid */}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field
+            label="Category"
+            htmlFor="tx-category"
+            required
+            error={errors.categoryId}
+          >
+            {categories.length === 0 && !categoriesLoading ? (
+              <div className="rounded-xl border border-dashed border-light-border bg-light-surfaceSecondary/50 p-2.5 text-xs text-light-textSecondary">
+                No categories found.{" "}
+                <Link
+                  to="/categories"
+                  onClick={onClose}
+                  className="font-semibold text-brand-primary hover:underline"
+                >
+                  Create one first
+                </Link>
+              </div>
+            ) : (
+              <CustomCategorySelect
+                id="tx-category"
+                value={form.categoryId}
+                onChange={updateField("categoryId")}
+                categories={categories}
+                placeholder={
+                  categoriesLoading ? "Loading categories…" : "Select category"
+                }
+                disabled={categoriesLoading}
               />
-            </div>
+            )}
           </Field>
 
           <Field label="Date" htmlFor="tx-date" required>
-            <input
+            <CustomDatePicker
               id="tx-date"
-              type="date"
               value={form.date}
               onChange={updateField("date")}
-              className={inputClasses}
             />
           </Field>
         </div>
 
-        <Field
-          label="Category"
-          htmlFor="tx-category"
-          required
-          error={errors.categoryId}
-        >
-          {categories.length === 0 && !categoriesLoading ? (
-            <div className="rounded-xl border border-dashed border-light-border bg-light-surfaceSecondary/60 px-4 py-3 text-sm text-light-textSecondary">
-              You need a category first.{" "}
-              <Link
-                to="/categories"
-                onClick={onClose}
-                className="font-semibold text-brand-primary hover:underline"
-              >
-                Create one
-              </Link>
-              .
-            </div>
-          ) : (
-            <Select
-              id="tx-category"
-              value={form.categoryId}
-              onChange={updateField("categoryId")}
-              options={categoryOptions}
-              placeholder={
-                categoriesLoading ? "Loading categories…" : "Select category"
-              }
-              disabled={categoriesLoading}
-            />
-          )}
-        </Field>
-
-        <fieldset>
-          <legend className="mb-1.5 block text-[13px] font-medium text-light-textSecondary">
-            Payment method
-          </legend>
-          <div className="flex flex-wrap gap-2">
+        {/* Payment Method Pills */}
+        <div>
+          <label className="block text-[11px] font-medium text-light-textMuted uppercase mb-1.5">
+            Payment Method
+          </label>
+          <div className="flex flex-wrap gap-1.5">
             {PAYMENT_METHODS.map(({ value, label }) => {
               const active = form.paymentMethod === value;
               return (
@@ -250,11 +250,10 @@ const TransactionFormContent = ({
                   onClick={() =>
                     setForm((prev) => ({ ...prev, paymentMethod: value }))
                   }
-                  aria-pressed={active}
-                  className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${
+                  className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
                     active
-                      ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
-                      : "border-light-border bg-white text-light-textSecondary hover:border-brand-primary/40 hover:text-light-textPrimary"
+                      ? "border-brand-primary/50 bg-brand-primary/10 text-brand-primary font-semibold"
+                      : "border-light-border bg-light-surface text-light-textSecondary hover:bg-light-surfaceSecondary hover:text-light-textPrimary"
                   }`}
                 >
                   {label}
@@ -262,20 +261,20 @@ const TransactionFormContent = ({
               );
             })}
           </div>
-        </fieldset>
+        </div>
 
+        {/* Note / Message */}
         <Field
-          label="Note"
+          label="Note (Optional)"
           htmlFor="tx-message"
-          hint="Optional — what was this for?"
         >
           <textarea
             id="tx-message"
             rows={2}
-            placeholder="e.g. Dinner with friends"
+            placeholder="What was this transaction for?"
             value={form.message}
             onChange={updateField("message")}
-            className={textareaClasses}
+            className={`${textareaClasses} text-xs min-h-[64px]`}
           />
         </Field>
       </form>

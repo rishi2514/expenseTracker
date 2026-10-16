@@ -1,4 +1,4 @@
-// Friendly placeholder shown when a list has no items.
+// Minimalist, modern empty state placeholder
 const EmptyState = ({
   icon = null,
   title,
@@ -7,18 +7,18 @@ const EmptyState = ({
   className = "",
 }) => (
   <div
-    className={`flex flex-col items-center justify-center gap-2 px-6 py-12 text-center ${className}`}
+    className={`flex flex-col items-center justify-center gap-2 px-6 py-14 text-center ${className}`}
   >
     {icon && (
-      <div className="mb-1 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
+      <div className="mb-1 flex h-10 w-10 items-center justify-center rounded-xl bg-light-surfaceSecondary text-brand-primary">
         {icon}
       </div>
     )}
-    <h3 className="text-[15px] font-semibold text-light-textPrimary">{title}</h3>
+    <h3 className="text-sm font-semibold text-light-textPrimary">{title}</h3>
     {description && (
-      <p className="max-w-sm text-sm text-light-textSecondary">{description}</p>
+      <p className="max-w-xs text-xs text-light-textMuted leading-relaxed">{description}</p>
     )}
-    {action && <div className="mt-3">{action}</div>}
+    {action && <div className="mt-3.5">{action}</div>}
   </div>
 );
 

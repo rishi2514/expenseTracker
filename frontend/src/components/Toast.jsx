@@ -24,7 +24,7 @@ const ToastViewport = ({ toasts, onDismiss }) => (
         <div
           key={toast.id}
           role="status"
-          className="pointer-events-auto flex w-full items-start gap-3 rounded-xl border border-light-border bg-white p-3.5 shadow-lg animate-toast-in"
+          className="pointer-events-auto flex w-full items-start gap-3 rounded-xl border border-light-border bg-light-surface p-3.5 shadow-lg animate-toast-in"
         >
           <Icon className={`mt-0.5 shrink-0 text-xl ${tone}`} aria-hidden="true" />
           <p className="flex-1 text-sm leading-snug text-light-textPrimary">

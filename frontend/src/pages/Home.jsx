@@ -164,7 +164,7 @@ const Home = () => (
         {FEATURES.map(({ Icon, title, description }) => (
           <div
             key={title}
-            className="group rounded-2xl border border-light-border bg-white p-6 shadow-card transition hover:-translate-y-0.5 hover:border-brand-primary/40"
+            className="group rounded-2xl border border-light-border bg-light-surface p-6 shadow-card transition hover:-translate-y-0.5 hover:border-brand-primary/40"
           >
             <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-primary/10 text-xl text-brand-primary transition group-hover:bg-brand-primary group-hover:text-white">
               <Icon aria-hidden="true" />
