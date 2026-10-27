@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+
+  /* ── Brand ── */
+  --color-brand-primary:      var(--accent);
+  --color-brand-primaryLight: var(--accent-light);
+  --color-brand-primaryDark:  var(--accent-dark);
+  --color-brand-accent:       var(--accent);
+
+  /* ── Semantic ── */
+  --color-semantic-success: #12B76A;
+  --color-semantic-warning: #F79009;
+  --color-semantic-danger:  #F04438;
+
+  /* ── Surface tokens (CSS-var–backed → auto flip on data-theme) ── */
+  --color-light-background:       var(--bg);
+  --color-light-surface:          var(--surface);
+  --color-light-surfaceSecondary: var(--surface2);
+  --color-light-border:           var(--border);
+  --color-light-textPrimary:      var(--text-1);
+  --color-light-textSecondary:    var(--text-2);
+  --color-light-textMuted:        var(--text-3);
+
+  --shadow-card: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+}
+
+/* ───────────────────────────────────────────────
+   LIGHT  (clean, minimal — almost-white palette)
+─────────────────────────────────────────────── */
+:root,
+[data-theme="light"] {
+  --accent:       #5B4CF5;   /* deep violet  */
+  --accent-light: #7B6EF8;
+  --accent-dark:  #4435D4;
+
+  --bg:       #F8F8FA;  /* near-white cool tint */
+  --surface:  #FFFFFF;
+  --surface2: #F3F3F6;
+  --border:   #E6E6EC;
+
+  --text-1: #0D0D14;   /* near-black     */
+  --text-2: #6B6B80;   /* medium gray    */
+  --text-3: #A3A3B8;   /* muted          */
+
+  --scrollbar-thumb:  #D1D1DC;
+  --scrollbar-hover:  #A3A3B8;
+  --donut-track:      #EBEBF2;
+  --sidebar-bg:       #FFFFFF;
+  --sidebar-border:   #E6E6EC;
+  --backdrop:         rgba(13, 13, 20, 0.50);
+
+  --income-bg:  #ECFDF5;
+  --income-fg:  #027A48;
+  --expense-bg: #FEF3F2;
+  --expense-fg: #B42318;
+}
+
+/* ───────────────────────────────────────────────
+   DARK  (true charcoal — not blue, not navy)
+─────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --accent:       #7B6EF8;
+  --accent-light: #9D93FA;
+  --accent-dark:  #5B4CF5;
+
+  --bg:       #111113;  /* true near-black */
+  --surface:  #1A1A1E;
+  --surface2: #232327;
+  --border:   #2E2E34;
+
+  --text-1: #F0F0F5;
+  --text-2: #8A8A99;
+  --text-3: #52525E;
+
+  --scrollbar-thumb:  #3A3A42;
+  --scrollbar-hover:  #52525E;
+  --donut-track:      #2A2A30;
+  --sidebar-bg:       #141416;
+  --sidebar-border:   #242428;
+  --backdrop:         rgba(0, 0, 0, 0.70);
+
+  --income-bg:  rgba(18, 183, 106, 0.12);
+  --income-fg:  #47D48A;
+  --expense-bg: rgba(240, 68, 56, 0.12);
+  --expense-fg: #F97066;
+}
+
+/* ───────────────────────────────────────────────
+   BASE
+─────────────────────────────────────────────── */
+html {
+  background: var(--bg);
+  color: var(--text-1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text-1);
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root { min-height: 100vh; }
+
+::selection { background: rgba(91, 76, 245, 0.18); }
+
+/* ───────────────────────────────────────────────
+   KEYFRAMES
+─────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-shimmer  { animation: shimmer 1.5s ease-in-out infinite; }
+.animate-fade-in  { animation: fade-in 0.15s ease-out; }
+.animate-slide-up { animation: slide-up 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
+.animate-toast-in { animation: toast-in 0.22s cubic-bezier(0.22, 1, 0.36, 1); }
+.animate-scale-in { animation: scale-in 0.18s cubic-bezier(0.22, 1, 0.36, 1); }
+
+/* ───────────────────────────────────────────────
+   SIDEBAR
+─────────────────────────────────────────────── */
+.sidebar {
+  background:   var(--sidebar-bg);
+  border-color: var(--sidebar-border);
+}
+
+/* ───────────────────────────────────────────────
+   FORMS — inherit theme vars
+─────────────────────────────────────────────── */
+input, textarea, select {
+  color-scheme: light dark;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.5;
+}
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+}
+input[type="search"]::-webkit-search-cancel-button { cursor: pointer; }
+
+/* ───────────────────────────────────────────────
+   DONUT TRACK
+─────────────────────────────────────────────── */
+.donut-track { stroke: var(--donut-track); }
+
+/* ───────────────────────────────────────────────
+   MODAL BACKDROP
+─────────────────────────────────────────────── */
+.modal-backdrop { background: var(--backdrop); }
+
+/* ───────────────────────────────────────────────
+   SCROLLBARS
+─────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background:    var(--scrollbar-thumb);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }
+
+/* ───────────────────────────────────────────────
+   SMOOTH THEME TRANSITIONS
+─────────────────────────────────────────────── */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 0.18s;
+  transition-timing-function: ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ───────────────────────────────────────────────
+   INCOME / EXPENSE BADGES — themed
+─────────────────────────────────────────────── */
+.badge-income  { background: var(--income-bg);  color: var(--income-fg); }
+.badge-expense { background: var(--expense-bg); color: var(--expense-fg); }
